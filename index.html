@@ -584,7 +584,7 @@
       <h2>このツールについて</h2>
       大型トラック・トレーラーの点検を助ける無料ツールです。「かんたん診断」は専門知識なしのYes/No形式、「3ヶ月記録簿」「日常点検簿」はスマホで入力して点検記録簿として印刷（PDF保存）できます。1級自動車整備士（トラック整備の実務経験あり）が作成しています。
       個人が作成した非公式ツールであり、法定点検・整備の代わりにはなりません。判断に迷う項目や不安がある場合は、必ず整備士・整備工場にご相談ください。
-      入力した内容は端末の外に送信されません（このページ内だけで処理されます）。
+      入力した点検内容は端末の外に送信されません（このページ内だけで処理されます）。アクセス数の集計にのみ Cloudflare Web Analytics（Cookieを使わず、個々の訪問者を追跡しない方式）を利用しています。
     </section>
     </div><!-- /#mode-simple -->
 
@@ -1315,5 +1315,7 @@ try{
 }catch(e){}
 setMode(startMode);
 </script>
+<!-- Cloudflare Web Analytics（Cookieなし・個人追跡なし。アクセス数の集計のみ） -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "6a4febe6553a467da11e8dce731592a3"}'></script>
 </body>
 </html>
