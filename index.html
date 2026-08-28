@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大型トラック 3ヶ月点検 簡易セルフチェック｜整備士が作った無料ツール</title>
+<meta name="description" content="大型トラック・トレーラーの3ヶ月定期点検を、専門知識なしのYes/No形式で確認できる無料セルフチェックツール。1級自動車整備士が作成。液量・クラッチ・オイル漏れ・アイドリング・タイヤ摩耗などをチェックできます。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://example.github.io/">
+
+<!-- SNSでシェアされたときの表示 -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="大型トラック 3ヶ月点検 簡易セルフチェック">
+<meta property="og:description" content="専門知識なしのYes/No形式で、大型トラックの3ヶ月点検の要点を確認できる無料ツール。1級自動車整備士が作成。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%9B%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans+JP:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1b1d1e;
+    --bg-panel: #232627;
+    --bg-panel-raised: #2b2f30;
+    --steel: #4a6572;
+    --amber: #f2a900;
+    --amber-dim: #a97a1f;
+    --text: #e8e6e1;
+    --text-dim: #9aa0a0;
+    --ok: #5b8266;
+    --warn: #c0392b;
+    --line: #3a3d3e;
+    --radius: 3px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0; background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans JP', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body{
+    background-image:
+      linear-gradient(var(--bg) 0%, var(--bg) 100%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 6px);
+  }
+  .wrap{ max-width: 640px; margin: 0 auto; padding: 0 0 80px; }
+
+  /* Header: gauge-style */
+  header{
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top:0; z-index: 10;
+    background: rgba(27,29,30,0.96);
+    backdrop-filter: blur(4px);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.14em;
+    color: var(--amber); text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+  h1{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 30px; line-height: 1.1;
+    margin: 0 0 4px; letter-spacing: 0.01em;
+  }
+  .sub{
+    font-size: 13px; color: var(--text-dim); margin: 0 0 18px;
+  }
+  .tread-bar{
+    height: 8px; background: var(--bg-panel);
+    border-radius: 2px; overflow: hidden; position: relative;
+    border: 1px solid var(--line);
+  }
+  .tread-bar .fill{
+    height: 100%; width: 0%;
+    background: repeating-linear-gradient(115deg, var(--amber), var(--amber) 6px, var(--amber-dim) 6px, var(--amber-dim) 12px);
+    transition: width 0.35s ease;
+  }
+  .tread-label{
+    display:flex; justify-content: space-between;
+    font-family:'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--text-dim); margin-top: 6px;
+  }
+
+  main{ padding: 24px 20px 0; }
+
+  .disclaimer{
+    background: var(--bg-panel);
+    border-left: 3px solid var(--amber);
+    padding: 12px 14px; font-size: 12.5px; color: var(--text-dim);
+    border-radius: var(--radius); margin-bottom: 26px; line-height: 1.6;
+  }
+  .disclaimer strong{ color: var(--text); }
+
+  .card{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card.answered{ border-color: #45494a; }
+  .card-head{
+    display:flex; align-items:flex-start; gap: 12px;
+    padding: 16px 16px 4px;
+  }
+  .num{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 13px;
+    color: var(--bg); background: var(--amber);
+    width: 24px; height: 24px; min-width:24px;
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    margin-top: 2px;
+  }
+  .card-title-group{ flex:1; }
+  .category{
+    font-family:'IBM Plex Mono', monospace; font-size: 10.5px;
+    color: var(--steel); letter-spacing: 0.08em; text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+  .card-title{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 20px; margin: 0; color: var(--text);
+  }
+  .card-body{ padding: 10px 16px 16px 52px; }
+  .q{
+    font-size: 14.5px; line-height: 1.65; color: var(--text); margin: 0 0 12px;
+  }
+  .q .hint{
+    display:block; font-size: 12px; color: var(--text-dim); margin-top:4px;
+  }
+  .branch{
+    margin-bottom: 12px;
+  }
+  .branch-label{
+    font-size: 12px; color: var(--text-dim); margin-bottom: 6px;
+  }
+  .choices{ display:flex; gap: 8px; flex-wrap: wrap; }
+  .choice-btn{
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 13.5px; font-weight: 500;
+    padding: 9px 16px; border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-panel-raised);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .choice-btn:hover{ border-color: var(--steel); }
+  .choice-btn.selected-yes{ background: var(--warn); border-color: var(--warn); color: #fff; }
+  .choice-btn.selected-no{ background: var(--ok); border-color: var(--ok); color: #fff; }
+  .choice-btn.selected-neutral{ background: var(--steel); border-color: var(--steel); color: #fff; }
+
+  .result-line{
+    margin-top: 10px; padding: 10px 12px;
+    border-radius: var(--radius);
+    font-size: 13px; line-height: 1.6;
+    display:none;
+  }
+  .result-line.show{ display:block; }
+  .result-line.ok{ background: rgba(91,130,102,0.15); border: 1px solid rgba(91,130,102,0.4); color: #a8c9b1; }
+  .result-line.warn{ background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.45); color: #e5a49c; }
+  .result-line.info{ background: rgba(74,101,114,0.18); border: 1px solid rgba(74,101,114,0.5); color: #b9c7cd; }
+
+  /* Summary / stamp */
+  .summary{
+    margin-top: 32px; padding: 24px 20px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    text-align:center;
+  }
+  .summary-label{
+    font-family:'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .stamp{
+    display:inline-block; font-family:'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 26px; letter-spacing: 0.06em;
+    padding: 10px 28px; border: 3px solid currentColor;
+    border-radius: 4px; transform: rotate(-3deg);
+    margin-bottom: 14px;
+  }
+  .stamp.pending{ color: var(--text-dim); border-style: dashed; }
+  .stamp.ok{ color: var(--ok); }
+  .stamp.warn{ color: var(--warn); }
+  .summary-note{ font-size: 13px; color: var(--text-dim); line-height:1.7; max-width: 440px; margin: 0 auto; }
+  .summary-note b{ color: var(--text); }
+
+  .reset-btn{
+    margin-top: 18px;
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 9px 22px; border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-panel-raised); color: var(--text-dim);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .reset-btn:hover{ border-color: var(--steel); color: var(--text); }
+
+  .about{
+    margin-top: 34px; padding: 18px 18px;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    font-size: 12.5px; color: var(--text-dim); line-height: 1.8;
+  }
+  .about h2{
+    font-family:'Barlow Condensed', sans-serif; font-weight:700;
+    font-size: 15px; letter-spacing:0.04em; color: var(--text);
+    margin: 0 0 8px;
+  }
+
+  footer{
+    text-align:center; padding: 30px 20px 10px;
+    font-size: 11.5px; color: #5c6060; line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">大型貨物車 &middot; 3ヶ月定期点検</p>
+    <h1>今日の状態、いつもと違いますか？</h1>
+    <p class="sub">6つのポイントを、専門知識なしで確認できます。</p>
+    <div class="tread-bar"><div class="fill" id="progressFill"></div></div>
+    <div class="tread-label"><span>進捗</span><span id="progressText">0 / 6 項目</span></div>
+  </header>
+
+  <main>
+    <div class="disclaimer">
+      <strong>これは目安を確認するための簡易チェックです。</strong> 法定点検の代わりにはなりません。「要点検」が出た項目、または少しでも不安がある場合は、整備士・整備工場に確認してください。
+    </div>
+
+    <!-- 1: 液量 -->
+    <div class="card" data-card="1">
+      <div class="card-head">
+        <div class="num">1</div>
+        <div class="card-title-group">
+          <p class="category">原動機 &middot; 液量</p>
+          <h2 class="card-title">エンジンオイル・クーラント</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="q">ゲージ・リザーバータンクの量は、前回確認したときより減っていますか？<span class="hint">オイルレベルゲージの上限・下限線、クーラントタンクの目盛りで確認してください。</span></p>
+        <div class="choices" data-q="oil_coolant">
+          <button class="choice-btn" data-val="no">減っていない</button>
+          <button class="choice-btn" data-val="yes">減っている</button>
+        </div>
+        <div class="result-line" data-result="oil_coolant"></div>
+      </div>
+    </div>
+
+    <!-- 2: ブレーキフルード -->
+    <div class="card" data-card="2">
+      <div class="card-head">
+        <div class="num">2</div>
+        <div class="card-title-group">
+          <p class="category">ブレーキ装置 &middot; 液量</p>
+          <h2 class="card-title">ブレーキフルード</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="branch">
+          <p class="branch-label">この車両のブレーキ方式は？</p>
+          <div class="choices" data-q="brake_type">
+            <button class="choice-btn" data-val="disc">ディスクブレーキ</button>
+            <button class="choice-btn" data-val="drum">ドラムブレーキ</button>
+          </div>
+        </div>
+        <p class="q" id="brakeLevelQ" style="display:none;">リザーバータンクの量は、前回より減っていますか？</p>
+        <div class="choices" data-q="brake_level" id="brakeLevelChoices" style="display:none;">
+          <button class="choice-btn" data-val="no">減っていない</button>
+          <button class="choice-btn" data-val="yes">減っている</button>
+        </div>
+        <div class="result-line" data-result="brake_level"></div>
+      </div>
+    </div>
+
+    <!-- 3: クラッチ -->
+    <div class="card" data-card="3">
+      <div class="card-head">
+        <div class="num">3</div>
+        <div class="card-title-group">
+          <p class="category">動力伝達装置</p>
+          <h2 class="card-title">クラッチペダル</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="q">クラッチペダルを数回踏み込んだとき、繋がる位置がそのたびに変わる感じがしますか？<span class="hint">クラッチマスター・ブースターからの油圧漏れのサインです。</span></p>
+        <div class="choices" data-q="clutch_shift">
+          <button class="choice-btn" data-val="no">変わらない</button>
+          <button class="choice-btn" data-val="yes">変わる</button>
+        </div>
+        <div class="result-line" data-result="clutch_shift"></div>
+
+        <p class="q" style="margin-top:16px;">ペダルを奥まで踏み込まないと繋がらない（床に近いところでしか繋がらない）感覚はありますか？</p>
+        <div class="choices" data-q="clutch_deep">
+          <button class="choice-btn" data-val="no">ない</button>
+          <button class="choice-btn" data-val="yes">ある</button>
+        </div>
+        <div class="result-line" data-result="clutch_deep"></div>
+      </div>
+    </div>
+
+    <!-- 4: オイル漏れ -->
+    <div class="card" data-card="4">
+      <div class="card-head">
+        <div class="num">4</div>
+        <div class="card-title-group">
+          <p class="category">下回り &middot; 目視</p>
+          <h2 class="card-title">オイル・液体の漏れ跡</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="q">駐車していた場所の地面に、油のような染みができていますか？</p>
+        <div class="choices" data-q="leak_ground">
+          <button class="choice-btn" data-val="no">できていない</button>
+          <button class="choice-btn" data-val="yes">できている</button>
+        </div>
+        <div class="result-line" data-result="leak_ground"></div>
+
+        <div id="leakLocationBlock" style="display:none; margin-top:16px;">
+          <p class="branch-label">染みの真上あたり、車体のどのあたりが濡れていますか？</p>
+          <div class="choices" data-q="leak_location">
+            <button class="choice-btn" data-val="front">前寄り（エンジン付近）</button>
+            <button class="choice-btn" data-val="middle">中央（運転席〜荷台の下）</button>
+            <button class="choice-btn" data-val="rear">後ろ寄り（車軸付近）</button>
+            <button class="choice-btn" data-val="unknown">わからない</button>
+          </div>
+          <div class="result-line" data-result="leak_location"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5: アイドリング -->
+    <div class="card" data-card="5">
+      <div class="card-head">
+        <div class="num">5</div>
+        <div class="card-title-group">
+          <p class="category">原動機</p>
+          <h2 class="card-title">アイドリング時の振動</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="q">エンジンをアイドリング状態にしたとき、いつもより振動が大きく感じますか？<span class="hint">ハンドルやシートへの伝わり方で、普段と比べてください。</span></p>
+        <div class="choices" data-q="idle_vibration">
+          <button class="choice-btn" data-val="no">いつも通り</button>
+          <button class="choice-btn" data-val="yes">大きい</button>
+        </div>
+        <div class="result-line" data-result="idle_vibration"></div>
+      </div>
+    </div>
+
+    <!-- 6: タイヤ -->
+    <div class="card" data-card="6">
+      <div class="card-head">
+        <div class="num">6</div>
+        <div class="card-title-group">
+          <p class="category">タイヤ &middot; 目視</p>
+          <h2 class="card-title">フロントタイヤの摩耗</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="q">フロントタイヤの溝の角（エッジ）が、のこぎりの歯のようにギザギザ、または角だけ減っていますか？</p>
+        <div class="choices" data-q="tire_edge">
+          <button class="choice-btn" data-val="no">なっていない</button>
+          <button class="choice-btn" data-val="yes">なっている</button>
+        </div>
+        <div class="result-line" data-result="tire_edge"></div>
+
+        <p class="q" style="margin-top:16px;">タイヤの表面全体が、波打つようにデコボコしていますか？</p>
+        <div class="choices" data-q="tire_wave">
+          <button class="choice-btn" data-val="no">なっていない</button>
+          <button class="choice-btn" data-val="yes">なっている</button>
+        </div>
+        <div class="result-line" data-result="tire_wave"></div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <p class="summary-label">診断結果</p>
+      <div class="stamp pending" id="stampEl">未完了</div>
+      <p class="summary-note" id="summaryNote">すべての項目に回答すると、結果が表示されます。</p>
+      <div><button class="reset-btn" id="resetBtn" type="button">最初からやり直す</button></div>
+    </div>
+
+    <section class="about">
+      <h2>このツールについて</h2>
+      大型トラック・トレーラーの3ヶ月定期点検の要点を、専門知識がなくてもYes/No形式で確認できる無料のセルフチェックツールです。1級自動車整備士（トラック整備の実務経験あり）が作成しています。
+      個人が作成した非公式ツールであり、法定点検・整備の代わりにはなりません。判断に迷う項目や不安がある場合は、必ず整備士・整備工場にご相談ください。
+      入力した内容は端末の外に送信されません（このページ内だけで処理されます）。
+    </section>
+  </main>
+
+  <footer>
+    大型貨物車 3ヶ月点検 簡易セルフチェック（試作版）<br>
+    個人作成の非公式ツール — 実際の点検・整備は必ず整備士・整備工場にご確認ください。
+  </footer>
+</div>
+
+<script>
+const answers = {};
+const totalPrimary = 6; // カードの数（進捗の分母）
+
+function setResult(key, cls, text){
+  const el = document.querySelector(`[data-result="${key}"]`);
+  if(!el) return;
+  el.className = 'result-line show ' + cls;
+  el.textContent = text;
+}
+
+function clearButtons(container){
+  container.querySelectorAll('.choice-btn').forEach(b=>{
+    b.classList.remove('selected-yes','selected-no','selected-neutral');
+  });
+}
+
+document.querySelectorAll('.choices').forEach(group=>{
+  const qkey = group.dataset.q;
+  group.querySelectorAll('.choice-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      clearButtons(group);
+      const val = btn.dataset.val;
+      if(val === 'yes') btn.classList.add('selected-yes');
+      else if(val === 'no') btn.classList.add('selected-no');
+      else btn.classList.add('selected-neutral');
+
+      answers[qkey] = val;
+      handleAnswer(qkey, val);
+      updateProgress();
+      updateSummary();
+    });
+  });
+});
+
+function handleAnswer(qkey, val){
+  switch(qkey){
+    case 'oil_coolant':
+      val === 'yes'
+        ? setResult(qkey, 'warn', '要点検：減少が続く場合は漏れや異常消費の可能性があります。整備士に確認してください。')
+        : setResult(qkey, 'ok', '正常範囲です。');
+      markCardAnswered(1);
+      break;
+
+    case 'brake_type':
+      document.getElementById('brakeLevelQ').style.display = 'block';
+      document.getElementById('brakeLevelChoices').style.display = 'flex';
+      break;
+
+    case 'brake_level':
+      const brakeType = answers['brake_type'];
+      if(brakeType === 'disc'){
+        val === 'yes'
+          ? setResult(qkey, 'info', 'ディスクブレーキはパッドの摩耗に伴い自然に減少します。急激な減りでなければ経過観察でOKです。')
+          : setResult(qkey, 'ok', '正常範囲です。');
+      } else {
+        val === 'yes'
+          ? setResult(qkey, 'warn', '要点検：ドラムブレーキは通常、量が大きく減りません。漏れの可能性があるため確認してください。')
+          : setResult(qkey, 'ok', '正常範囲です。');
+      }
+      markCardAnswered(2);
+      break;
+
+    case 'clutch_shift':
+      val === 'yes'
+        ? setResult(qkey, 'warn', '要点検：クラッチマスター・ブースターの油圧漏れの疑いがあります。')
+        : setResult(qkey, 'ok', '異常なし。');
+      checkClutchDone();
+      break;
+
+    case 'clutch_deep':
+      val === 'yes'
+        ? setResult(qkey, 'warn', '要点検：クラッチの摩耗・調整不良の疑いがあります。')
+        : setResult(qkey, 'ok', '異常なし。');
+      checkClutchDone();
+      break;
+
+    case 'leak_ground':
+      if(val === 'yes'){
+        document.getElementById('leakLocationBlock').style.display = 'block';
+        setResult(qkey, 'warn', '染みが確認できたら、下の項目で位置を確認してください。');
+      } else {
+        document.getElementById('leakLocationBlock').style.display = 'none';
+        setResult(qkey, 'ok', '漏れの兆候なし。');
+        markCardAnswered(4);
+      }
+      break;
+
+    case 'leak_location':
+      const locMsg = {
+        front: '要点検：前寄りはエンジンオイル・冷却水系統からの漏れの可能性があります。',
+        middle: '要点検：中央部はミッション・プロペラシャフト・燃料系統からの漏れの可能性があります。',
+        rear: '要点検：後ろ寄りはデフオイル漏れの可能性があります。',
+        unknown: '要点検：位置が特定できない場合も、必ず整備士に見てもらってください。'
+      };
+      setResult(qkey, 'warn', locMsg[val]);
+      markCardAnswered(4);
+      break;
+
+    case 'idle_vibration':
+      val === 'yes'
+        ? setResult(qkey, 'warn', '要点検：普段との違いは重要なサインです。エンジンマウントや点火系統の点検を推奨します。')
+        : setResult(qkey, 'ok', 'いつも通りです。');
+      markCardAnswered(5);
+      break;
+
+    case 'tire_edge':
+      val === 'yes'
+        ? setResult(qkey, 'warn', '要点検：偏摩耗のサインです。空気圧・アライメントの確認を推奨します。')
+        : setResult(qkey, 'ok', '異常なし。');
+      checkTireDone();
+      break;
+
+    case 'tire_wave':
+      val === 'yes'
+        ? setResult(qkey, 'warn', 'ローテーション時期のサインです。')
+        : setResult(qkey, 'ok', '異常なし。');
+      checkTireDone();
+      break;
+  }
+}
+
+function checkClutchDone(){
+  if(answers['clutch_shift'] !== undefined && answers['clutch_deep'] !== undefined){
+    markCardAnswered(3);
+  }
+}
+function checkTireDone(){
+  if(answers['tire_edge'] !== undefined && answers['tire_wave'] !== undefined){
+    markCardAnswered(6);
+  }
+}
+function markCardAnswered(n){
+  const card = document.querySelector(`[data-card="${n}"]`);
+  if(card) card.classList.add('answered');
+}
+
+function updateProgress(){
+  const answeredCards = document.querySelectorAll('.card.answered').length;
+  const pct = Math.round((answeredCards/totalPrimary)*100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${answeredCards} / ${totalPrimary} 項目`;
+}
+
+function updateSummary(){
+  const answeredCards = document.querySelectorAll('.card.answered').length;
+  const stamp = document.getElementById('stampEl');
+  const note = document.getElementById('summaryNote');
+
+  if(answeredCards < totalPrimary){
+    stamp.className = 'stamp pending';
+    stamp.textContent = '未完了';
+    note.textContent = 'すべての項目に回答すると、結果が表示されます。';
+    return;
+  }
+
+  const warnKeys = document.querySelectorAll('.result-line.warn.show').length;
+
+  if(warnKeys === 0){
+    stamp.className = 'stamp ok';
+    stamp.textContent = '異常なし';
+    note.innerHTML = '今回確認した項目に、気になる点は見つかりませんでした。<b>この結果は簡易チェックの範囲内での判断です。</b>日常点検・法定点検は引き続き実施してください。';
+  } else {
+    stamp.className = 'stamp warn';
+    stamp.textContent = `要点検 ${warnKeys}件`;
+    note.innerHTML = `<b>${warnKeys}件の項目で「要点検」</b>のサインが出ました。該当箇所を、整備士・整備工場に確認してください。`;
+  }
+}
+
+// 最初からやり直す
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  for(const k in answers) delete answers[k];
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    b.classList.remove('selected-yes','selected-no','selected-neutral');
+  });
+  document.querySelectorAll('.result-line').forEach(el=>{
+    el.className = 'result-line';
+    el.textContent = '';
+  });
+  document.querySelectorAll('.card.answered').forEach(c=> c.classList.remove('answered'));
+  document.getElementById('brakeLevelQ').style.display = 'none';
+  document.getElementById('brakeLevelChoices').style.display = 'none';
+  document.getElementById('leakLocationBlock').style.display = 'none';
+  updateProgress();
+  updateSummary();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
