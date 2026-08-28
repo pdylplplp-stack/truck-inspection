@@ -349,8 +349,50 @@
     font-family:'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-dim);
   }
 
-  /* ===== 印刷シート（画面では非表示） ===== */
-  .print-sheet{ display:none; }
+  /* ===== 印刷シート =====
+     画面では非表示。印刷時と採寸時のみ表示。
+     文字サイズはすべて em で、.print-sheet の font-size(=--ps-scale倍) に追従する。
+     JS が用紙いっぱいになるよう --ps-scale を自動調整する。 */
+  .print-sheet{
+    display:none;
+    width: 281mm;
+    color:#000;
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: calc(11px * var(--ps-scale, 1));
+  }
+  .print-sheet.measure{
+    display:block !important;
+    position:fixed; left:-99999px; top:0; z-index:-1;
+  }
+  .ps-title{ font-size:1.75em; font-weight:700; text-align:center; margin:0 0 .15em; letter-spacing:.1em; }
+  .ps-note{ font-size:.85em; text-align:center; color:#333; margin:0 0 .55em; }
+  .ps-basic{
+    display:grid; grid-template-columns: repeat(4, 1fr); gap:.25em 1.2em;
+    border:1px solid #000; padding:.45em .7em; font-size:1em; margin-bottom:.55em;
+  }
+  .ps-basic .k{ color:#333; }
+  .ps-basic .v{ font-weight:600; }
+  .ps-legend{
+    font-size:.9em; border:1px solid #000; padding:.4em .7em;
+    margin-bottom:.6em; line-height:1.5;
+  }
+  .pcols{ column-count:3; column-gap:1em; }
+  .pcols.daily{ column-count:2; }
+  .pgroup{ margin-bottom:.35em; }
+  .pgh{
+    font-weight:700; font-size:1.05em; background:#ddd; padding:.18em .4em;
+    break-after:avoid; -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .pr{
+    display:flex; justify-content:space-between; gap:.35em;
+    font-size:.95em; line-height:1.5; border-bottom:1px solid #ccc; padding:.14em .3em;
+  }
+  .pr .pi{ flex:1; }
+  .pr .pi .mkp{ border:1px solid #000; font-size:.78em; padding:0 .2em; margin-left:.25em; }
+  .pr .pi .nt{ color:#333; }
+  .pr .ps{ min-width:1.7em; text-align:center; font-weight:700; border-left:1px solid #999; padding-left:.25em; font-size:1.05em; }
+  .ps-memo{ font-size:.95em; border:1px solid #000; padding:.4em .7em; margin-top:.5em; white-space:pre-wrap; line-height:1.5; }
+  .ps-foot{ font-size:.8em; margin-top:.4em; color:#333; }
 
   @media print{
     @page{ size: A4 landscape; margin: 8mm; }
@@ -360,37 +402,7 @@
     main{ padding:0; }
     body.recmode #mode-simple, body.dailymode #mode-simple{ display:none !important; }
     #recInteractive, #dailyInteractive{ display:none !important; }
-    .print-sheet{ display:block !important; }
-
-    .ps-title{ font-size:17px; font-weight:700; text-align:center; margin:0 0 2px; letter-spacing:0.1em; }
-    .ps-note{ font-size:9px; text-align:center; color:#333; margin:0 0 6px; }
-    .ps-basic{
-      display:grid; grid-template-columns: repeat(4, 1fr); gap:2px 14px;
-      border:1px solid #000; padding:5px 8px; font-size:10px; margin-bottom:6px;
-    }
-    .ps-basic .k{ color:#333; }
-    .ps-basic .v{ font-weight:600; }
-    .ps-legend{
-      font-size:9px; border:1px solid #000; padding:4px 8px;
-      margin-bottom:7px; line-height:1.55;
-    }
-    .pcols{ column-count:3; column-gap:10px; }
-    .pcols.daily{ column-count:2; }
-    .pgroup{ break-inside:avoid; margin-bottom:6px; }
-    .pgh{
-      font-weight:700; font-size:10.5px; background:#ddd; padding:2px 4px;
-      -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    }
-    .pr{
-      display:flex; justify-content:space-between; gap:4px;
-      font-size:9.5px; line-height:1.55; border-bottom:1px solid #ccc; padding:1px 3px;
-    }
-    .pr .pi{ flex:1; }
-    .pr .pi .mkp{ border:1px solid #000; font-size:7.5px; padding:0 2px; margin-left:3px; }
-    .pr .pi .nt{ color:#333; }
-    .pr .ps{ min-width:20px; text-align:center; font-weight:700; border-left:1px solid #999; padding-left:3px; font-size:11px; }
-    .ps-memo{ font-size:9.5px; border:1px solid #000; padding:4px 8px; margin-top:6px; white-space:pre-wrap; line-height:1.5; }
-    .ps-foot{ font-size:8.5px; margin-top:5px; color:#333; }
+    .print-sheet{ display:block !important; width:auto; }
   }
 </style>
 </head>
@@ -1166,6 +1178,25 @@ function buildPrintSheet(kind){
     (isRec ? `<p class="ps-foot">この点検整備記録簿は複写して、車載・会社にて保存してください（保存期間1年）。</p>` : '');
 }
 
+/* 印刷シートを A4横1ページいっぱいに広げる（--ps-scale を二分探索で調整） */
+function fitPrintSheet(kind){
+  const isRec = kind === 'record';
+  const sheet = document.getElementById(isRec ? 'recPrintSheet' : 'dailyPrintSheet');
+  if(!sheet) return;
+  const pxPerMm = 96 / 25.4;
+  const pageH = (210 - 16) * pxPerMm * 0.985;   // A4横の印刷可能高さ（上下8mm余白）
+  const maxScale = isRec ? 2.6 : 1.35;          // 日常点検は項目が少ないので拡大しすぎない
+  sheet.classList.add('measure');
+  let lo = 0.6, hi = maxScale;
+  for(let i = 0; i < 16; i++){
+    const mid = (lo + hi) / 2;
+    sheet.style.setProperty('--ps-scale', String(mid));
+    if(sheet.scrollHeight <= pageH) lo = mid; else hi = mid;
+  }
+  sheet.classList.remove('measure');
+  sheet.style.setProperty('--ps-scale', lo.toFixed(3));
+}
+
 /* --- モード切替 --- */
 const HD = {
   simple: { eyebrow:'大型貨物車 · 3ヶ月定期点検', title:'今日の状態、いつもと違いますか？', sub:'6つのポイントを、専門知識なしで確認できます。' },
@@ -1187,8 +1218,8 @@ function setMode(mode){
   document.getElementById('hdEyebrow').textContent = h.eyebrow;
   document.getElementById('hdTitle').textContent = h.title;
   document.getElementById('hdSub').textContent = h.sub;
-  if(mode === 'record') buildPrintSheet('record');
-  if(mode === 'daily')  buildPrintSheet('daily');
+  if(mode === 'record'){ buildPrintSheet('record'); fitPrintSheet('record'); }
+  if(mode === 'daily'){ buildPrintSheet('daily'); fitPrintSheet('daily'); }
   try{ localStorage.setItem(MODE_KEY, mode); }catch(e){}
   window.scrollTo({ top: 0 });
 }
@@ -1262,14 +1293,14 @@ function clearGroup(root, storeKey, savedNoteId, guideEl){
   const n = document.getElementById(savedNoteId);
   if(n) n.textContent = '入力すると自動でこの端末に保存されます。';
 }
-document.getElementById('btnPrintRecord').addEventListener('click', ()=>{ buildPrintSheet('record'); window.print(); });
-document.getElementById('btnPrintDaily').addEventListener('click', ()=>{ buildPrintSheet('daily'); window.print(); });
+document.getElementById('btnPrintRecord').addEventListener('click', ()=>{ buildPrintSheet('record'); fitPrintSheet('record'); window.print(); });
+document.getElementById('btnPrintDaily').addEventListener('click', ()=>{ buildPrintSheet('daily'); fitPrintSheet('daily'); window.print(); });
 document.getElementById('btnClearRecord').addEventListener('click', ()=> clearGroup(recRoot, STORE.record, 'savedNoteRecord', recGuideEl));
 document.getElementById('btnClearDaily').addEventListener('click', ()=> clearGroup(dailyRoot, STORE.daily, 'savedNoteDaily', dailyGuideEl));
 
 window.addEventListener('beforeprint', ()=>{
-  if(document.body.classList.contains('recmode')) buildPrintSheet('record');
-  if(document.body.classList.contains('dailymode')) buildPrintSheet('daily');
+  if(document.body.classList.contains('recmode')){ buildPrintSheet('record'); fitPrintSheet('record'); }
+  if(document.body.classList.contains('dailymode')){ buildPrintSheet('daily'); fitPrintSheet('daily'); }
 });
 
 /* --- 起動時：URLの ?m= 指定 → 前回のモード → 既定 --- */
