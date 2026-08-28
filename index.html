@@ -3,16 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>大型トラック 3ヶ月点検 簡易セルフチェック＆記録簿｜整備士が作った無料ツール</title>
-<meta name="description" content="大型トラック・トレーラーの3ヶ月定期点検を、専門知識なしのYes/No形式で確認できる無料ツール。スマホで入力して最後に点検記録簿として印刷（PDF保存）もできます。1級自動車整備士が作成。">
+<title>大型トラック 3ヶ月点検・日常点検 記録簿＆かんたん診断｜整備士が作った無料ツール</title>
+<meta name="description" content="大型トラック・トレーラーの3ヶ月定期点検と日常点検を、スマホで入力して点検記録簿として印刷（PDF保存）できる無料ツール。専門知識なしのYes/No診断モードも搭載。1級自動車整備士が作成。">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://pdylplplp-stack.github.io/truck-inspection/">
 <meta property="og:url" content="https://pdylplplp-stack.github.io/truck-inspection/">
 
-<!-- SNSでシェアされたときの表示 -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="大型トラック 3ヶ月点検 簡易セルフチェック＆記録簿">
-<meta property="og:description" content="専門知識なしのYes/No形式で3ヶ月点検の要点を確認。スマホで入力→点検記録簿として印刷もできる無料ツール。1級自動車整備士が作成。">
+<meta property="og:title" content="大型トラック 3ヶ月点検・日常点検 記録簿＆かんたん診断">
+<meta property="og:description" content="スマホで入力→点検記録簿として印刷できる無料ツール。かんたん診断モードも搭載。1級自動車整備士が作成。">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary">
 
@@ -47,7 +46,7 @@
       linear-gradient(var(--bg) 0%, var(--bg) 100%),
       repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 6px);
   }
-  .wrap{ max-width: 640px; margin: 0 auto; padding: 0 0 80px; }
+  .wrap{ max-width: 680px; margin: 0 auto; padding: 0 0 80px; }
 
   header{
     padding: 24px 20px 18px;
@@ -64,28 +63,22 @@
   }
   h1{
     font-family:'Barlow Condensed', sans-serif;
-    font-weight: 800; font-size: 30px; line-height: 1.1;
+    font-weight: 800; font-size: 28px; line-height: 1.1;
     margin: 0 0 4px; letter-spacing: 0.01em;
   }
-  .sub{
-    font-size: 13px; color: var(--text-dim); margin: 0 0 14px;
-  }
+  .sub{ font-size: 13px; color: var(--text-dim); margin: 0 0 14px; }
 
-  .mode-switch{
-    display:flex; gap: 6px; margin-bottom: 12px;
-  }
+  .mode-switch{ display:flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
   .mode-switch button{
-    flex:1;
+    flex: 1 1 30%; min-width: 90px;
     font-family:'IBM Plex Sans JP', sans-serif;
-    font-size: 13px; font-weight: 600;
-    padding: 9px 8px; border-radius: var(--radius);
+    font-size: 12.5px; font-weight: 600;
+    padding: 9px 6px; border-radius: var(--radius);
     border: 1px solid var(--line);
     background: var(--bg-panel); color: var(--text-dim);
     cursor: pointer; transition: all 0.15s;
   }
-  .mode-switch button.active{
-    background: var(--amber); border-color: var(--amber); color: var(--bg);
-  }
+  .mode-switch button.active{ background: var(--amber); border-color: var(--amber); color: var(--bg); }
 
   .tread-bar{
     height: 8px; background: var(--bg-panel);
@@ -113,20 +106,16 @@
   }
   .disclaimer strong{ color: var(--text); }
 
-  /* ===== かんたんチェック（既存） ===== */
+  /* ===== かんたん診断 ===== */
   .card{
     background: var(--bg-panel);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    margin-bottom: 16px;
-    overflow: hidden;
+    margin-bottom: 16px; overflow: hidden;
     transition: border-color 0.2s;
   }
   .card.answered{ border-color: #45494a; }
-  .card-head{
-    display:flex; align-items:flex-start; gap: 12px;
-    padding: 16px 16px 4px;
-  }
+  .card-head{ display:flex; align-items:flex-start; gap: 12px; padding: 16px 16px 4px; }
   .num{
     font-family:'Barlow Condensed', sans-serif;
     font-weight: 700; font-size: 13px;
@@ -147,26 +136,18 @@
     font-weight: 700; font-size: 20px; margin: 0; color: var(--text);
   }
   .card-body{ padding: 10px 16px 16px 52px; }
-  .q{
-    font-size: 14.5px; line-height: 1.65; color: var(--text); margin: 0 0 12px;
-  }
-  .q .hint{
-    display:block; font-size: 12px; color: var(--text-dim); margin-top:4px;
-  }
+  .q{ font-size: 14.5px; line-height: 1.65; color: var(--text); margin: 0 0 12px; }
+  .q .hint{ display:block; font-size: 12px; color: var(--text-dim); margin-top:4px; }
   .branch{ margin-bottom: 12px; }
-  .branch-label{
-    font-size: 12px; color: var(--text-dim); margin-bottom: 6px;
-  }
+  .branch-label{ font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
   .choices{ display:flex; gap: 8px; flex-wrap: wrap; }
   .choice-btn{
     font-family:'IBM Plex Sans JP', sans-serif;
     font-size: 13.5px; font-weight: 500;
     padding: 9px 16px; border-radius: var(--radius);
     border: 1px solid var(--line);
-    background: var(--bg-panel-raised);
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.15s;
+    background: var(--bg-panel-raised); color: var(--text);
+    cursor: pointer; transition: all 0.15s;
   }
   .choice-btn:hover{ border-color: var(--steel); }
   .choice-btn.selected-yes{ background: var(--warn); border-color: var(--warn); color: #fff; }
@@ -175,9 +156,7 @@
 
   .result-line{
     margin-top: 10px; padding: 10px 12px;
-    border-radius: var(--radius);
-    font-size: 13px; line-height: 1.6;
-    display:none;
+    border-radius: var(--radius); font-size: 13px; line-height: 1.6; display:none;
   }
   .result-line.show{ display:block; }
   .result-line.ok{ background: rgba(91,130,102,0.15); border: 1px solid rgba(91,130,102,0.4); color: #a8c9b1; }
@@ -199,8 +178,7 @@
     display:inline-block; font-family:'Barlow Condensed', sans-serif;
     font-weight: 800; font-size: 26px; letter-spacing: 0.06em;
     padding: 10px 28px; border: 3px solid currentColor;
-    border-radius: 4px; transform: rotate(-3deg);
-    margin-bottom: 14px;
+    border-radius: 4px; transform: rotate(-3deg); margin-bottom: 14px;
   }
   .stamp.pending{ color: var(--text-dim); border-style: dashed; }
   .stamp.ok{ color: var(--ok); }
@@ -226,8 +204,7 @@
   }
   .about h2{
     font-family:'Barlow Condensed', sans-serif; font-weight:700;
-    font-size: 15px; letter-spacing:0.04em; color: var(--text);
-    margin: 0 0 8px;
+    font-size: 15px; letter-spacing:0.04em; color: var(--text); margin: 0 0 8px;
   }
 
   footer{
@@ -235,7 +212,7 @@
     font-size: 11.5px; color: #5c6060; line-height: 1.7;
   }
 
-  /* ===== 記録簿モード ===== */
+  /* ===== 記録簿・日常点検（入力画面） ===== */
   .rec-section-title{
     font-family:'Barlow Condensed', sans-serif; font-weight:700;
     font-size: 17px; letter-spacing: 0.04em; color: var(--text);
@@ -264,13 +241,9 @@
   }
   .rec-legend b{ color: var(--text); font-family:'IBM Plex Mono', monospace; }
 
-  .rec-table{
-    width: 100%; border-collapse: collapse; margin-top: 12px;
-    font-size: 12.5px;
-  }
+  .rec-table{ width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12.5px; }
   .rec-table th, .rec-table td{
-    border: 1px solid var(--line); padding: 7px 8px; text-align: left;
-    vertical-align: middle;
+    border: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: middle;
   }
   .rec-table thead th{
     background: var(--bg-panel-raised); color: var(--text-dim);
@@ -281,8 +254,8 @@
     font-weight: 700; font-family:'Barlow Condensed', sans-serif;
     font-size: 14px; letter-spacing: 0.03em;
   }
-  .rec-table td.col-place{ width: 40%; color: var(--text); }
-  .rec-table td.col-check{ width: 30%; color: var(--text-dim); font-size: 11.5px; }
+  .rec-table td.col-place{ width: 38%; color: var(--text); }
+  .rec-table td.col-check{ width: 32%; color: var(--text-dim); font-size: 11.5px; }
   .rec-table .mk{
     display:inline-block; margin-left: 4px; padding: 0 4px;
     font-family:'IBM Plex Mono', monospace; font-size: 10px;
@@ -296,12 +269,10 @@
     background: var(--bg-panel-raised); border: 1px solid var(--line);
     border-radius: var(--radius); padding: 6px 4px; width: 100%;
   }
-  .rec-table select.res-x{ color: #e5a49c; border-color: var(--warn); }
+  .rec-table select.res-act{ color: var(--amber); border-color: var(--amber-dim); }
   .rec-table select.res-ok{ color: #a8c9b1; }
 
-  .rec-actions{
-    display:flex; gap: 10px; margin: 22px 0 0; flex-wrap: wrap;
-  }
+  .rec-actions{ display:flex; gap: 10px; margin: 22px 0 0; flex-wrap: wrap; }
   .btn-primary{
     font-family:'IBM Plex Sans JP', sans-serif;
     font-size: 14px; font-weight: 600;
@@ -316,76 +287,50 @@
     border: 1px solid var(--line); background: var(--bg-panel-raised); color: var(--text-dim);
     cursor: pointer;
   }
-  .rec-saved-note{
-    font-size: 11.5px; color: var(--text-dim); margin-top: 10px;
-  }
+  .rec-saved-note{ font-size: 11.5px; color: var(--text-dim); margin-top: 10px; }
 
-  .print-only{ display:none; }
+  /* ===== 印刷シート（画面では非表示） ===== */
+  .print-sheet{ display:none; }
 
-  /* ===== 印刷（記録簿）===== */
   @media print{
-    @page{ size: A4 portrait; margin: 12mm; }
-    html, body{
-      background: #fff !important; color: #000 !important;
-      background-image: none !important;
+    @page{ size: A4 portrait; margin: 10mm; }
+    html, body{ background:#fff !important; color:#000 !important; background-image:none !important; }
+    .wrap{ max-width:none; padding:0; margin:0; }
+    header, footer, .no-print{ display:none !important; }
+    main{ padding:0; }
+    body.recmode #mode-simple, body.dailymode #mode-simple{ display:none !important; }
+    #recInteractive, #dailyInteractive{ display:none !important; }
+    .print-sheet{ display:block !important; }
+
+    .ps-title{ font-size:15px; font-weight:700; text-align:center; margin:0 0 2px; letter-spacing:0.08em; }
+    .ps-note{ font-size:8px; text-align:center; color:#333; margin:0 0 6px; }
+    .ps-basic{
+      display:grid; grid-template-columns: 1fr 1fr; gap:1px 10px;
+      border:1px solid #000; padding:4px 6px; font-size:8.7px; margin-bottom:5px;
     }
-    .wrap{ max-width: none; padding: 0; }
-    header, footer, .mode-switch, #simpleProgress,
-    .disclaimer, .rec-actions, .rec-saved-note, .no-print{
-      display: none !important;
+    .ps-basic .k{ color:#333; }
+    .ps-basic .v{ font-weight:600; }
+    .ps-legend{
+      font-size:7.6px; border:1px solid #000; padding:3px 6px;
+      margin-bottom:6px; line-height:1.5;
     }
-    main{ padding: 0; }
-    body:not(.recmode) #mode-record{ display: none !important; }
-    body.recmode #mode-simple{ display: none !important; }
-    body.recmode .print-only{ display: block !important; }
-    .print-title{
-      font-size: 16px; font-weight: 700; text-align: center;
-      margin: 0 0 4px; letter-spacing: 0.06em;
+    .pcols{ column-count:3; column-gap:7px; }
+    .pcols.daily{ column-count:2; }
+    .pgroup{ break-inside:avoid; margin-bottom:5px; }
+    .pgh{
+      font-weight:700; font-size:8.6px; background:#ddd; padding:1px 3px;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
     }
-    .print-note{
-      font-size: 9px; text-align: center; color: #333; margin: 0 0 10px;
+    .pr{
+      display:flex; justify-content:space-between; gap:3px;
+      font-size:7.7px; line-height:1.45; border-bottom:1px solid #ccc; padding:1px 2px;
     }
-    .rec-section-title{
-      color: #000; font-size: 12px; margin: 12px 0 4px;
-      border-bottom: 1px solid #000;
-    }
-    .rec-basic{
-      border: 1px solid #000; padding: 6px; gap: 3px 10px;
-      break-inside: avoid;
-    }
-    .rec-field label{ color: #000; font-size: 8.5px; }
-    .rec-field input, .rec-field textarea{
-      color: #000 !important; background: #fff !important;
-      border: none !important; border-bottom: 1px solid #999 !important;
-      border-radius: 0; padding: 1px 2px; font-size: 10px;
-    }
-    .rec-legend{
-      color: #000; border: 1px solid #000; padding: 4px 8px;
-      font-size: 8.5px; line-height: 1.5; margin: 8px 0 0;
-    }
-    .rec-legend b{ color: #000; }
-    .rec-table{ font-size: 9px; margin-top: 6px; }
-    .rec-table th, .rec-table td{
-      border: 1px solid #000 !important; padding: 2px 4px;
-      color: #000 !important;
-    }
-    .rec-table thead th{
-      background: #eee !important; color: #000 !important;
-      -webkit-print-color-adjust: exact; print-color-adjust: exact;
-    }
-    .rec-group-row td{
-      background: #ddd !important; color: #000 !important;
-      font-size: 9.5px;
-      -webkit-print-color-adjust: exact; print-color-adjust: exact;
-    }
-    .rec-table tr{ break-inside: avoid; }
-    .rec-table select, .rec-table input{
-      color: #000 !important; background: #fff !important;
-      border: none !important; -webkit-appearance: none; appearance: none;
-      font-size: 9px; padding: 0; text-align: center;
-    }
-    .rec-table td.col-check{ color: #000; font-size: 8px; }
-    .rec-table .mk{ color: #000; border: 1px solid #000; font-size: 7.5px; }
+    .pr .pi{ flex:1; }
+    .pr .pi .mkp{ border:1px solid #000; font-size:6.4px; padding:0 2px; margin-left:2px; }
+    .pr .pi .nt{ color:#333; }
+    .pr .ps{ min-width:15px; text-align:center; font-weight:700; border-left:1px solid #999; padding-left:2px; }
+    .ps-memo{ font-size:8px; border:1px solid #000; padding:3px 6px; margin-top:5px; white-space:pre-wrap; line-height:1.4; }
+    .ps-foot{ font-size:7.4px; margin-top:4px; color:#333; }
   }
 </style>
 </head>
@@ -398,8 +343,9 @@
     <p class="sub" id="hdSub">6つのポイントを、専門知識なしで確認できます。</p>
 
     <div class="mode-switch">
-      <button type="button" id="btnModeSimple" class="active">かんたんチェック</button>
-      <button type="button" id="btnModeRecord">点検記録簿</button>
+      <button type="button" id="btnModeSimple" class="active">かんたん診断</button>
+      <button type="button" id="btnModeRecord">3ヶ月記録簿</button>
+      <button type="button" id="btnModeDaily">日常点検簿</button>
     </div>
 
     <div id="simpleProgress">
@@ -409,7 +355,7 @@
   </header>
 
   <main>
-    <!-- ============ かんたんチェック ============ -->
+    <!-- ============ かんたん診断 ============ -->
     <div id="mode-simple">
     <div class="disclaimer">
       <strong>これは目安を確認するための簡易チェックです。</strong> 法定点検の代わりにはなりません。「要点検」が出た項目、または少しでも不安がある場合は、整備士・整備工場に確認してください。
@@ -564,87 +510,111 @@
 
     <section class="about">
       <h2>このツールについて</h2>
-      大型トラック・トレーラーの3ヶ月定期点検の要点を、専門知識がなくてもYes/No形式で確認できる無料のセルフチェックツールです。「点検記録簿」モードに切り替えると、スマホで入力して最後に記録簿として印刷（PDF保存）もできます。1級自動車整備士（トラック整備の実務経験あり）が作成しています。
+      大型トラック・トレーラーの点検を助ける無料ツールです。「かんたん診断」は専門知識なしのYes/No形式、「3ヶ月記録簿」「日常点検簿」はスマホで入力して点検記録簿として印刷（PDF保存）できます。1級自動車整備士（トラック整備の実務経験あり）が作成しています。
       個人が作成した非公式ツールであり、法定点検・整備の代わりにはなりません。判断に迷う項目や不安がある場合は、必ず整備士・整備工場にご相談ください。
       入力した内容は端末の外に送信されません（このページ内だけで処理されます）。
     </section>
     </div><!-- /#mode-simple -->
 
-    <!-- ============ 点検記録簿 ============ -->
+    <!-- ============ 3ヶ月点検記録簿 ============ -->
     <div id="mode-record" hidden>
-      <div class="disclaimer no-print">
-        <strong>この記録簿は、ご提供の実務用エクセル「３カ月点検整備記録簿」の項目に合わせて作成しています。</strong> 記号の凡例・表現・レイアウトは、点検実施者（整備有資格者）が必ずご確認ください。入力内容はこの端末内にのみ自動保存され、外部には送信されません。
-      </div>
-
-      <div class="print-only">
-        <p class="print-title">３か月点検整備記録簿</p>
-        <p class="print-note">自動車点検基準 別表第3 に基づく</p>
-      </div>
-
-      <div class="rec-section-title">1. 基本情報</div>
-      <div class="rec-basic" id="recBasic">
-        <div class="rec-field wide"><label>使用者の氏名または名称</label><input type="text" name="b_owner" autocomplete="off"></div>
-        <div class="rec-field wide"><label>住所</label><input type="text" name="b_addr" autocomplete="off"></div>
-        <div class="rec-field"><label>自動車登録番号または車両番号</label><input type="text" name="b_plate" autocomplete="off"></div>
-        <div class="rec-field"><label>車台番号</label><input type="text" name="b_vin" autocomplete="off"></div>
-        <div class="rec-field"><label>点検・整備時の総走行距離（km）</label><input type="text" inputmode="numeric" name="b_odo" autocomplete="off"></div>
-        <div class="rec-field"><label>点検年月日</label><input type="date" name="b_date"></div>
-        <div class="rec-field"><label>点検整備実施者の氏名または名称</label><input type="text" name="b_inspector" autocomplete="off"></div>
-        <div class="rec-field"><label>整備完了日</label><input type="date" name="b_done"></div>
-      </div>
-
-      <div class="rec-legend">
-        <b>記号の意味</b>
-        <b>レ</b>＝良好（異常なし）／
-        <b>△</b>＝分解・修理・調整などの整備をした／
-        <b>×</b>＝不良（要整備）／
-        <b>A</b>＝分解して点検した／
-        <b>／</b>＝該当なし・省略<br>
-        <b>※1</b>＝3か月の走行距離が2000km以下のときは省略できる（ただし2回連続の省略は不可）／
-        <b>※2</b>＝車両総重量8t以上、または乗車定員30人以上の自動車が対象
-      </div>
-
-      <div class="rec-section-title">2. 点検項目</div>
-      <table class="rec-table">
-        <thead>
-          <tr>
-            <th>点検箇所</th>
-            <th>点検内容</th>
-            <th>結果</th>
-            <th>備考</th>
-          </tr>
-        </thead>
-        <tbody id="recBody"><!-- JSで生成 --></tbody>
-      </table>
-
-      <div class="rec-section-title">3. その他の整備、交換部品等</div>
-      <div class="rec-basic">
-        <div class="rec-field wide">
-          <label>実施した整備・交換部品・気づいた点など</label>
-          <textarea name="b_memo"></textarea>
+      <div id="recInteractive">
+        <div class="disclaimer no-print">
+          <strong>この記録簿は、ご提供の実務用エクセル「３カ月点検整備記録簿」（自動車点検基準 別表第3）の項目・記号に合わせて作成しています。</strong> 内容は点検実施者（整備有資格者）がご確認ください。入力内容はこの端末内にのみ自動保存され、外部には送信されません。
         </div>
-      </div>
 
-      <p class="print-only" style="font-size:9px; margin-top:8px;">この点検整備記録簿は複写して、車載・会社にて保存してください（保存期間1年）。</p>
+        <div class="rec-section-title">1. 基本情報</div>
+        <div class="rec-basic">
+          <div class="rec-field wide"><label>使用者の氏名または名称</label><input type="text" name="b_owner" autocomplete="off"></div>
+          <div class="rec-field wide"><label>住所</label><input type="text" name="b_addr" autocomplete="off"></div>
+          <div class="rec-field"><label>自動車登録番号または車両番号</label><input type="text" name="b_plate" autocomplete="off"></div>
+          <div class="rec-field"><label>車台番号</label><input type="text" name="b_vin" autocomplete="off"></div>
+          <div class="rec-field"><label>点検・整備時の総走行距離（km）</label><input type="text" inputmode="numeric" name="b_odo" autocomplete="off"></div>
+          <div class="rec-field"><label>点検年月日</label><input type="date" name="b_date"></div>
+          <div class="rec-field"><label>点検整備実施者の氏名または名称</label><input type="text" name="b_inspector" autocomplete="off"></div>
+          <div class="rec-field"><label>整備完了日</label><input type="date" name="b_done"></div>
+        </div>
 
-      <div class="rec-actions no-print">
-        <button type="button" class="btn-primary" id="btnPrint">印刷 / PDF保存</button>
-        <button type="button" class="btn-ghost" id="btnClearRecord">入力を全部消す</button>
+        <div class="rec-legend" id="recLegend"></div>
+
+        <div class="rec-section-title">2. 点検項目</div>
+        <table class="rec-table">
+          <thead>
+            <tr><th>点検箇所</th><th>点検内容</th><th>結果</th><th>備考</th></tr>
+          </thead>
+          <tbody id="recBody"></tbody>
+        </table>
+
+        <div class="rec-section-title">3. その他の整備、交換部品等</div>
+        <div class="rec-basic">
+          <div class="rec-field wide">
+            <label>実施した整備・交換部品・気づいた点など</label>
+            <textarea name="b_memo"></textarea>
+          </div>
+        </div>
+
+        <div class="rec-actions">
+          <button type="button" class="btn-primary" id="btnPrintRecord">印刷 / PDF保存</button>
+          <button type="button" class="btn-ghost" id="btnClearRecord">入力を全部消す</button>
+        </div>
+        <p class="rec-saved-note" id="savedNoteRecord">入力すると自動でこの端末に保存されます。</p>
       </div>
-      <p class="rec-saved-note no-print" id="savedNote">入力すると自動でこの端末に保存されます。</p>
+      <div class="print-sheet" id="recPrintSheet"></div>
     </div><!-- /#mode-record -->
+
+    <!-- ============ 日常点検簿 ============ -->
+    <div id="mode-daily" hidden>
+      <div id="dailyInteractive">
+        <div class="disclaimer no-print">
+          <strong>この日常点検簿は、ご提供の実務用エクセルの「日常点検項目」に合わせて作成しています。</strong> 日常点検は運行前などに実施します。内容は点検実施者がご確認ください。入力内容はこの端末内にのみ自動保存されます。
+        </div>
+
+        <div class="rec-section-title">1. 基本情報</div>
+        <div class="rec-basic">
+          <div class="rec-field"><label>車両番号</label><input type="text" name="d_plate" autocomplete="off"></div>
+          <div class="rec-field"><label>点検年月日</label><input type="date" name="d_date"></div>
+          <div class="rec-field"><label>走行距離（km）</label><input type="text" inputmode="numeric" name="d_odo" autocomplete="off"></div>
+          <div class="rec-field"><label>点検者</label><input type="text" name="d_inspector" autocomplete="off"></div>
+        </div>
+
+        <div class="rec-legend" id="dailyLegend"></div>
+
+        <div class="rec-section-title">2. 点検項目</div>
+        <table class="rec-table">
+          <thead>
+            <tr><th>点検箇所</th><th>点検内容</th><th>結果</th><th>備考</th></tr>
+          </thead>
+          <tbody id="dailyBody"></tbody>
+        </table>
+
+        <div class="rec-section-title">3. 気づいた点</div>
+        <div class="rec-basic">
+          <div class="rec-field wide">
+            <label>気づいた点・申し送りなど</label>
+            <textarea name="d_memo"></textarea>
+          </div>
+        </div>
+
+        <div class="rec-actions">
+          <button type="button" class="btn-primary" id="btnPrintDaily">印刷 / PDF保存</button>
+          <button type="button" class="btn-ghost" id="btnClearDaily">入力を全部消す</button>
+        </div>
+        <p class="rec-saved-note" id="savedNoteDaily">入力すると自動でこの端末に保存されます。</p>
+      </div>
+      <div class="print-sheet" id="dailyPrintSheet"></div>
+    </div><!-- /#mode-daily -->
 
   </main>
 
   <footer>
-    大型貨物車 3ヶ月点検 簡易セルフチェック＆記録簿（試作版）<br>
+    大型貨物車 点検 記録簿＆かんたん診断（試作版）<br>
     個人作成の非公式ツール — 実際の点検・整備は必ず整備士・整備工場にご確認ください。
   </footer>
 </div>
 
 <script>
 /* ============================================================
-   かんたんチェック（既存ロジック）
+   かんたん診断
    ============================================================ */
 const answers = {};
 const totalPrimary = 6;
@@ -804,12 +774,17 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 });
 
 /* ============================================================
-   点検記録簿モード
-   ※ RECORD_ITEMS は、ユーザー提供の実務用エクセル
-     「３カ月点検整備記録簿」（自動車点検基準 別表第3）に合わせた項目。
-     項目の追加・削除・文言の修正はここを編集する。
-     mark: "※1"=2000km/3ヶ月以下は省略可（2回連続不可）／"※2"=車両総重量8t以上等が対象
+   記録簿・日常点検の共通データ
+   RESULT_OPTIONS / 凡例は、ユーザー提供エクセルの凡例に準拠：
+   レ=点検  ×=交換  A=調整  C=清掃  P=省略  ○=分解  △=修理  T=締付  L=給油  ／=該当なし
    ============================================================ */
+const RESULT_OPTIONS = ["", "レ", "×", "A", "C", "P", "○", "△", "T", "L", "／"];
+const LEGEND_TEXT =
+  '<b>記号</b> レ＝点検（異常なし）／ ×＝交換／ A＝調整／ C＝清掃／ P＝省略／ ○＝分解／ △＝修理／ T＝締付／ L＝給油／ ／＝該当なし';
+const MARK_TEXT =
+  '<b>※1</b>＝3か月の走行距離が2000km以下のときは省略できる（2回連続の省略は不可）／ <b>※2</b>＝車両総重量8t以上、または乗車定員30人以上の自動車が対象';
+
+/* 3ヶ月点検：ユーザー提供エクセル「３カ月点検整備記録簿」（別表第3）に準拠 */
 const RECORD_ITEMS = [
   { group: "かじ取り装置", items: [
     { place: "ロッド、アーム類（ステアリング・リンケージ）", check: "緩み、がた、損傷", mark: "※1" },
@@ -887,20 +862,37 @@ const RECORD_ITEMS = [
   ]},
 ];
 
-const RESULT_OPTIONS = ["", "レ", "△", "×", "A", "／"];
+/* 日常点検：ユーザー提供エクセル「日常点検項目」に準拠 */
+const DAILY_ITEMS = [
+  { group: "日常点検項目", items: [
+    { place: "ウィンド・ウォッシャー", check: "噴射状態" },
+    { place: "ワイパー", check: "拭き取りの状態" },
+    { place: "空気圧力計", check: "空気圧力の上がり具合" },
+    { place: "ブレーキ・バルブ", check: "排気音" },
+    { place: "ウィンド・ウォッシャ・タンク", check: "液量" },
+    { place: "バッテリ", check: "液量" },
+    { place: "ラジエータなどの冷却装置", check: "水量" },
+    { place: "潤滑装置", check: "エンジン・オイルの量" },
+    { place: "灯火装置、方向指示器", check: "点灯・点滅具合、汚れ、損傷" },
+  ]},
+];
 
-function buildRecordTable(){
-  const tbody = document.getElementById('recBody');
+function escHtml(s){
+  return String(s).replace(/[&<>"]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+function buildTable(tbodyId, groups, prefix){
+  const tbody = document.getElementById(tbodyId);
+  const opts = RESULT_OPTIONS.map(o=> `<option value="${o}">${o || '—'}</option>`).join('');
   let html = '';
-  RECORD_ITEMS.forEach((grp, gi)=>{
-    html += `<tr class="rec-group-row"><td colspan="4">■ ${grp.group}</td></tr>`;
+  groups.forEach((grp, gi)=>{
+    html += `<tr class="rec-group-row"><td colspan="4">■ ${escHtml(grp.group)}</td></tr>`;
     grp.items.forEach((it, ii)=>{
-      const base = `r_${gi}_${ii}`;
-      const opts = RESULT_OPTIONS.map(o=> `<option value="${o}">${o || '—'}</option>`).join('');
+      const base = `${prefix}_${gi}_${ii}`;
       const mk = it.mark ? ` <span class="mk">${it.mark}</span>` : '';
       html += `<tr>
-        <td class="col-place">${it.place}</td>
-        <td class="col-check">${it.check || ''}${mk}</td>
+        <td class="col-place">${escHtml(it.place)}</td>
+        <td class="col-check">${escHtml(it.check || '')}${mk}</td>
         <td class="col-result"><select name="${base}_result" data-result-select>${opts}</select></td>
         <td class="col-note"><input type="text" name="${base}_note" autocomplete="off"></td>
       </tr>`;
@@ -909,83 +901,169 @@ function buildRecordTable(){
   tbody.innerHTML = html;
 }
 
-/* --- 自動保存（この端末のみ） --- */
-const STORE_KEY = 'truck-record-v2';
-const MODE_KEY = 'truck-mode';
-
-function recordFields(){
-  return document.querySelectorAll('#mode-record [name]');
+function styleResultSelect(sel){
+  sel.classList.remove('res-act','res-ok');
+  if(sel.value === 'レ') sel.classList.add('res-ok');
+  else if(sel.value && sel.value !== '／' && sel.value !== 'P') sel.classList.add('res-act');
 }
-function saveRecord(){
+
+/* --- 自動保存（この端末のみ） --- */
+const MODE_KEY = 'truck-mode';
+const STORE = { record: 'truck-record-v3', daily: 'truck-daily-v1' };
+
+function fieldsIn(root){ return root.querySelectorAll('input[name], select[name], textarea[name]'); }
+function saveStore(key, root){
   try{
     const data = {};
-    recordFields().forEach(el=>{ data[el.name] = el.value; });
-    localStorage.setItem(STORE_KEY, JSON.stringify(data));
-    const n = document.getElementById('savedNote');
-    if(n) n.textContent = '保存しました（この端末内）　' + new Date().toLocaleString('ja-JP');
-  }catch(e){ /* 保存できない環境でも動作は継続する */ }
+    fieldsIn(root).forEach(el=>{ data[el.name] = el.value; });
+    localStorage.setItem(key, JSON.stringify(data));
+  }catch(e){}
 }
-function loadRecord(){
+function loadStore(key, root){
   let data = null;
-  try{ data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); }catch(e){}
+  try{ data = JSON.parse(localStorage.getItem(key) || 'null'); }catch(e){}
   if(!data) return;
-  recordFields().forEach(el=>{
-    if(data[el.name] !== undefined) el.value = data[el.name];
-  });
-  document.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
+  fieldsIn(root).forEach(el=>{ if(data[el.name] !== undefined) el.value = data[el.name]; });
+  root.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
 }
-function styleResultSelect(sel){
-  sel.classList.remove('res-x','res-ok');
-  if(sel.value === '×') sel.classList.add('res-x');
-  else if(sel.value === 'レ') sel.classList.add('res-ok');
+
+/* --- 印刷シートの組み立て（エクセル風の3段組み） --- */
+function buildPrintSheet(kind){
+  const isRec = kind === 'record';
+  const root  = document.getElementById(isRec ? 'mode-record' : 'mode-daily');
+  const sheet = document.getElementById(isRec ? 'recPrintSheet' : 'dailyPrintSheet');
+  if(!root || !sheet) return;
+  const items  = isRec ? RECORD_ITEMS : DAILY_ITEMS;
+  const prefix = isRec ? 'r' : 'd';
+  const gv = (name)=>{ const el = root.querySelector(`[name="${name}"]`); return el ? (el.value || '') : ''; };
+
+  const basics = isRec ? [
+    ['使用者', gv('b_owner')], ['住所', gv('b_addr')],
+    ['登録番号・車両番号', gv('b_plate')], ['車台番号', gv('b_vin')],
+    ['総走行距離(km)', gv('b_odo')], ['点検年月日', gv('b_date')],
+    ['点検整備実施者', gv('b_inspector')], ['整備完了日', gv('b_done')]
+  ] : [
+    ['車両番号', gv('d_plate')], ['点検年月日', gv('d_date')],
+    ['走行距離(km)', gv('d_odo')], ['点検者', gv('d_inspector')]
+  ];
+  const basicHtml = basics.map(([k,v])=>
+    `<div><span class="k">${escHtml(k)}：</span><span class="v">${escHtml(v)}</span></div>`).join('');
+
+  let colsHtml = '';
+  items.forEach((grp, gi)=>{
+    const rows = grp.items.map((it, ii)=>{
+      const r = gv(`${prefix}_${gi}_${ii}_result`);
+      const n = gv(`${prefix}_${gi}_${ii}_note`);
+      const mk = it.mark ? `<span class="mkp">${it.mark}</span>` : '';
+      const nt = n ? `<span class="nt">（${escHtml(n)}）</span>` : '';
+      return `<div class="pr"><span class="pi">${escHtml(it.place)}：${escHtml(it.check || '')}${mk}${nt}</span><span class="ps">${escHtml(r)}</span></div>`;
+    }).join('');
+    colsHtml += `<div class="pgroup"><div class="pgh">■ ${escHtml(grp.group)}</div>${rows}</div>`;
+  });
+
+  const memo  = isRec ? gv('b_memo') : gv('d_memo');
+  const title = isRec ? '３か月点検整備記録簿' : '日常点検記録簿';
+  const note  = isRec ? '自動車点検基準 別表第3 に基づく（個人作成様式）' : '日常点検（運行前点検）記録（個人作成様式）';
+  const legend = LEGEND_TEXT + (isRec ? '<br>' + MARK_TEXT : '');
+  const memoLabel = isRec ? 'その他の整備、交換部品等' : '気づいた点';
+
+  sheet.innerHTML =
+    `<p class="ps-title">${title}</p>` +
+    `<p class="ps-note">${note}</p>` +
+    `<div class="ps-basic">${basicHtml}</div>` +
+    `<div class="ps-legend">${legend}</div>` +
+    `<div class="pcols${isRec ? '' : ' daily'}">${colsHtml}</div>` +
+    (memo ? `<div class="ps-memo"><b>${memoLabel}：</b><br>${escHtml(memo)}</div>` : '') +
+    (isRec ? `<p class="ps-foot">この点検整備記録簿は複写して、車載・会社にて保存してください（保存期間1年）。</p>` : '');
 }
 
 /* --- モード切替 --- */
 const HD = {
   simple: { eyebrow:'大型貨物車 · 3ヶ月定期点検', title:'今日の状態、いつもと違いますか？', sub:'6つのポイントを、専門知識なしで確認できます。' },
-  record: { eyebrow:'大型貨物車 · 3ヶ月定期点検 記録簿', title:'3ヶ月点検 記録簿', sub:'スマホで入力して、最後に印刷（PDF保存）できます。' }
+  record: { eyebrow:'大型貨物車 · 3ヶ月点検整備記録簿', title:'3ヶ月点検 記録簿', sub:'スマホで入力して、最後に印刷（PDF保存）できます。' },
+  daily:  { eyebrow:'大型貨物車 · 日常点検', title:'日常点検 記録', sub:'運行前などの日常点検を入力して印刷できます。' }
 };
 function setMode(mode){
-  const isRec = mode === 'record';
-  document.getElementById('mode-simple').hidden = isRec;
-  document.getElementById('mode-record').hidden = !isRec;
-  document.body.classList.toggle('recmode', isRec);
-  document.getElementById('simpleProgress').style.display = isRec ? 'none' : '';
-  document.getElementById('btnModeSimple').classList.toggle('active', !isRec);
-  document.getElementById('btnModeRecord').classList.toggle('active', isRec);
-  const h = isRec ? HD.record : HD.simple;
+  if(!['simple','record','daily'].includes(mode)) mode = 'simple';
+  document.getElementById('mode-simple').hidden = mode !== 'simple';
+  document.getElementById('mode-record').hidden = mode !== 'record';
+  document.getElementById('mode-daily').hidden  = mode !== 'daily';
+  document.body.classList.toggle('recmode',   mode === 'record');
+  document.body.classList.toggle('dailymode', mode === 'daily');
+  document.getElementById('simpleProgress').style.display = mode === 'simple' ? '' : 'none';
+  document.getElementById('btnModeSimple').classList.toggle('active', mode === 'simple');
+  document.getElementById('btnModeRecord').classList.toggle('active', mode === 'record');
+  document.getElementById('btnModeDaily').classList.toggle('active', mode === 'daily');
+  const h = HD[mode];
   document.getElementById('hdEyebrow').textContent = h.eyebrow;
   document.getElementById('hdTitle').textContent = h.title;
   document.getElementById('hdSub').textContent = h.sub;
+  if(mode === 'record') buildPrintSheet('record');
+  if(mode === 'daily')  buildPrintSheet('daily');
   try{ localStorage.setItem(MODE_KEY, mode); }catch(e){}
   window.scrollTo({ top: 0 });
 }
 document.getElementById('btnModeSimple').addEventListener('click', ()=> setMode('simple'));
 document.getElementById('btnModeRecord').addEventListener('click', ()=> setMode('record'));
+document.getElementById('btnModeDaily').addEventListener('click', ()=> setMode('daily'));
 
-/* --- 記録簿の操作 --- */
-buildRecordTable();
-loadRecord();
-document.getElementById('mode-record').addEventListener('input', (e)=>{
-  if(e.target.matches('[data-result-select]')) styleResultSelect(e.target);
-  saveRecord();
-});
-document.getElementById('mode-record').addEventListener('change', (e)=>{
-  if(e.target.matches('[data-result-select]')) styleResultSelect(e.target);
-  saveRecord();
-});
-document.getElementById('btnPrint').addEventListener('click', ()=> window.print());
-document.getElementById('btnClearRecord').addEventListener('click', ()=>{
+/* --- 記録簿・日常点検の初期化と操作 --- */
+document.getElementById('recLegend').innerHTML = LEGEND_TEXT + '<br>' + MARK_TEXT;
+document.getElementById('dailyLegend').innerHTML = LEGEND_TEXT;
+
+buildTable('recBody', RECORD_ITEMS, 'r');
+buildTable('dailyBody', DAILY_ITEMS, 'd');
+
+const recRoot = document.getElementById('mode-record');
+const dailyRoot = document.getElementById('mode-daily');
+loadStore(STORE.record, recRoot);
+loadStore(STORE.daily, dailyRoot);
+
+function wireRecordish(root, storeKey, savedNoteId, printKind){
+  root.addEventListener('input', (e)=>{
+    if(e.target.matches('[data-result-select]')) styleResultSelect(e.target);
+    saveStore(storeKey, root);
+    buildPrintSheet(printKind);
+    const n = document.getElementById(savedNoteId);
+    if(n) n.textContent = '保存しました（この端末内）　' + new Date().toLocaleString('ja-JP');
+  });
+  root.addEventListener('change', (e)=>{
+    if(e.target.matches('[data-result-select]')) styleResultSelect(e.target);
+    saveStore(storeKey, root);
+    buildPrintSheet(printKind);
+  });
+}
+wireRecordish(recRoot, STORE.record, 'savedNoteRecord', 'record');
+wireRecordish(dailyRoot, STORE.daily, 'savedNoteDaily', 'daily');
+
+function clearGroup(root, storeKey, savedNoteId){
   if(!confirm('入力した内容をすべて消します。よろしいですか？')) return;
-  recordFields().forEach(el=>{ el.value = ''; });
-  document.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
-  try{ localStorage.removeItem(STORE_KEY); }catch(e){}
-  document.getElementById('savedNote').textContent = '入力すると自動でこの端末に保存されます。';
+  fieldsIn(root).forEach(el=>{ el.value = ''; });
+  root.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
+  try{ localStorage.removeItem(storeKey); }catch(e){}
+  const n = document.getElementById(savedNoteId);
+  if(n) n.textContent = '入力すると自動でこの端末に保存されます。';
+}
+document.getElementById('btnPrintRecord').addEventListener('click', ()=>{ buildPrintSheet('record'); window.print(); });
+document.getElementById('btnPrintDaily').addEventListener('click', ()=>{ buildPrintSheet('daily'); window.print(); });
+document.getElementById('btnClearRecord').addEventListener('click', ()=> clearGroup(recRoot, STORE.record, 'savedNoteRecord'));
+document.getElementById('btnClearDaily').addEventListener('click', ()=> clearGroup(dailyRoot, STORE.daily, 'savedNoteDaily'));
+
+window.addEventListener('beforeprint', ()=>{
+  if(document.body.classList.contains('recmode')) buildPrintSheet('record');
+  if(document.body.classList.contains('dailymode')) buildPrintSheet('daily');
 });
 
-/* --- 起動時：前回のモードを復元 --- */
+/* --- 起動時：URLの ?m= 指定 → 前回のモード → 既定 --- */
 let startMode = 'simple';
-try{ if(localStorage.getItem(MODE_KEY) === 'record') startMode = 'record'; }catch(e){}
+try{
+  const m = localStorage.getItem(MODE_KEY);
+  if(m === 'record' || m === 'daily') startMode = m;
+}catch(e){}
+try{
+  const q = new URLSearchParams(location.search).get('m');
+  if(q === 'record' || q === 'daily' || q === 'simple') startMode = q;
+}catch(e){}
 setMode(startMode);
 </script>
 </body>
