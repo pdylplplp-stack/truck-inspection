@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>大型トラック 3ヶ月点検 簡易セルフチェック｜整備士が作った無料ツール</title>
-<meta name="description" content="大型トラック・トレーラーの3ヶ月定期点検を、専門知識なしのYes/No形式で確認できる無料セルフチェックツール。1級自動車整備士が作成。液量・クラッチ・オイル漏れ・アイドリング・タイヤ摩耗などをチェックできます。">
+<title>大型トラック 3ヶ月点検 簡易セルフチェック＆記録簿｜整備士が作った無料ツール</title>
+<meta name="description" content="大型トラック・トレーラーの3ヶ月定期点検を、専門知識なしのYes/No形式で確認できる無料ツール。スマホで入力して最後に点検記録簿として印刷（PDF保存）もできます。1級自動車整備士が作成。">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://pdylplplp-stack.github.io/truck-inspection/">
 <meta property="og:url" content="https://pdylplplp-stack.github.io/truck-inspection/">
 
 <!-- SNSでシェアされたときの表示 -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="大型トラック 3ヶ月点検 簡易セルフチェック">
-<meta property="og:description" content="専門知識なしのYes/No形式で、大型トラックの3ヶ月点検の要点を確認できる無料ツール。1級自動車整備士が作成。">
+<meta property="og:title" content="大型トラック 3ヶ月点検 簡易セルフチェック＆記録簿">
+<meta property="og:description" content="専門知識なしのYes/No形式で3ヶ月点検の要点を確認。スマホで入力→点検記録簿として印刷もできる無料ツール。1級自動車整備士が作成。">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary">
 
@@ -49,9 +49,8 @@
   }
   .wrap{ max-width: 640px; margin: 0 auto; padding: 0 0 80px; }
 
-  /* Header: gauge-style */
   header{
-    padding: 28px 20px 20px;
+    padding: 24px 20px 18px;
     border-bottom: 1px solid var(--line);
     position: sticky; top:0; z-index: 10;
     background: rgba(27,29,30,0.96);
@@ -69,8 +68,25 @@
     margin: 0 0 4px; letter-spacing: 0.01em;
   }
   .sub{
-    font-size: 13px; color: var(--text-dim); margin: 0 0 18px;
+    font-size: 13px; color: var(--text-dim); margin: 0 0 14px;
   }
+
+  .mode-switch{
+    display:flex; gap: 6px; margin-bottom: 12px;
+  }
+  .mode-switch button{
+    flex:1;
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 13px; font-weight: 600;
+    padding: 9px 8px; border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-panel); color: var(--text-dim);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .mode-switch button.active{
+    background: var(--amber); border-color: var(--amber); color: var(--bg);
+  }
+
   .tread-bar{
     height: 8px; background: var(--bg-panel);
     border-radius: 2px; overflow: hidden; position: relative;
@@ -97,6 +113,7 @@
   }
   .disclaimer strong{ color: var(--text); }
 
+  /* ===== かんたんチェック（既存） ===== */
   .card{
     background: var(--bg-panel);
     border: 1px solid var(--line);
@@ -136,9 +153,7 @@
   .q .hint{
     display:block; font-size: 12px; color: var(--text-dim); margin-top:4px;
   }
-  .branch{
-    margin-bottom: 12px;
-  }
+  .branch{ margin-bottom: 12px; }
   .branch-label{
     font-size: 12px; color: var(--text-dim); margin-bottom: 6px;
   }
@@ -169,7 +184,6 @@
   .result-line.warn{ background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.45); color: #e5a49c; }
   .result-line.info{ background: rgba(74,101,114,0.18); border: 1px solid rgba(74,101,114,0.5); color: #b9c7cd; }
 
-  /* Summary / stamp */
   .summary{
     margin-top: 32px; padding: 24px 20px;
     background: var(--bg-panel);
@@ -220,25 +234,181 @@
     text-align:center; padding: 30px 20px 10px;
     font-size: 11.5px; color: #5c6060; line-height: 1.7;
   }
+
+  /* ===== 記録簿モード ===== */
+  .rec-section-title{
+    font-family:'Barlow Condensed', sans-serif; font-weight:700;
+    font-size: 17px; letter-spacing: 0.04em; color: var(--text);
+    margin: 24px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--line);
+  }
+  .rec-basic{
+    display:grid; grid-template-columns: 1fr 1fr; gap: 10px 12px;
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px;
+  }
+  .rec-field{ display:flex; flex-direction: column; gap: 4px; }
+  .rec-field.wide{ grid-column: 1 / -1; }
+  .rec-field label{ font-size: 11.5px; color: var(--text-dim); }
+  .rec-field input, .rec-field textarea{
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 16px; color: var(--text);
+    background: var(--bg-panel-raised); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 8px 10px; width: 100%;
+  }
+  .rec-field textarea{ min-height: 60px; resize: vertical; }
+
+  .rec-legend{
+    font-size: 12px; color: var(--text-dim); line-height: 1.9;
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 10px 14px; margin: 12px 0 4px;
+  }
+  .rec-legend b{ color: var(--text); font-family:'IBM Plex Mono', monospace; }
+
+  .rec-table{
+    width: 100%; border-collapse: collapse; margin-top: 12px;
+    font-size: 12.5px;
+  }
+  .rec-table th, .rec-table td{
+    border: 1px solid var(--line); padding: 7px 8px; text-align: left;
+    vertical-align: middle;
+  }
+  .rec-table thead th{
+    background: var(--bg-panel-raised); color: var(--text-dim);
+    font-weight: 600; font-size: 11px; letter-spacing: 0.04em;
+  }
+  .rec-group-row td{
+    background: var(--bg-panel-raised); color: var(--amber);
+    font-weight: 700; font-family:'Barlow Condensed', sans-serif;
+    font-size: 14px; letter-spacing: 0.03em;
+  }
+  .rec-table td.col-place{ width: 40%; color: var(--text); }
+  .rec-table td.col-check{ width: 30%; color: var(--text-dim); font-size: 11.5px; }
+  .rec-table td.col-result{ width: 14%; }
+  .rec-table td.col-note{ width: 16%; }
+  .rec-table select, .rec-table input{
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 15px; color: var(--text);
+    background: var(--bg-panel-raised); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 6px 4px; width: 100%;
+  }
+  .rec-table select.res-x{ color: #e5a49c; border-color: var(--warn); }
+  .rec-table select.res-ok{ color: #a8c9b1; }
+
+  .rec-actions{
+    display:flex; gap: 10px; margin: 22px 0 0; flex-wrap: wrap;
+  }
+  .btn-primary{
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 14px; font-weight: 600;
+    padding: 12px 22px; border-radius: var(--radius);
+    border: 1px solid var(--amber); background: var(--amber); color: var(--bg);
+    cursor: pointer; flex:1; min-width: 160px;
+  }
+  .btn-ghost{
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 12px 18px; border-radius: var(--radius);
+    border: 1px solid var(--line); background: var(--bg-panel-raised); color: var(--text-dim);
+    cursor: pointer;
+  }
+  .rec-saved-note{
+    font-size: 11.5px; color: var(--text-dim); margin-top: 10px;
+  }
+
+  .print-only{ display:none; }
+
+  /* ===== 印刷（記録簿）===== */
+  @media print{
+    @page{ size: A4 portrait; margin: 12mm; }
+    html, body{
+      background: #fff !important; color: #000 !important;
+      background-image: none !important;
+    }
+    .wrap{ max-width: none; padding: 0; }
+    header, footer, .mode-switch, #simpleProgress,
+    .disclaimer, .rec-actions, .rec-saved-note, .no-print{
+      display: none !important;
+    }
+    main{ padding: 0; }
+    body:not(.recmode) #mode-record{ display: none !important; }
+    body.recmode #mode-simple{ display: none !important; }
+    body.recmode .print-only{ display: block !important; }
+    .print-title{
+      font-size: 16px; font-weight: 700; text-align: center;
+      margin: 0 0 4px; letter-spacing: 0.06em;
+    }
+    .print-note{
+      font-size: 9px; text-align: center; color: #333; margin: 0 0 10px;
+    }
+    .rec-section-title{
+      color: #000; font-size: 12px; margin: 12px 0 4px;
+      border-bottom: 1px solid #000;
+    }
+    .rec-basic{
+      border: 1px solid #000; padding: 6px; gap: 3px 10px;
+      break-inside: avoid;
+    }
+    .rec-field label{ color: #000; font-size: 8.5px; }
+    .rec-field input, .rec-field textarea{
+      color: #000 !important; background: #fff !important;
+      border: none !important; border-bottom: 1px solid #999 !important;
+      border-radius: 0; padding: 1px 2px; font-size: 10px;
+    }
+    .rec-legend{
+      color: #000; border: 1px solid #000; padding: 4px 8px;
+      font-size: 8.5px; line-height: 1.5; margin: 8px 0 0;
+    }
+    .rec-legend b{ color: #000; }
+    .rec-table{ font-size: 9px; margin-top: 6px; }
+    .rec-table th, .rec-table td{
+      border: 1px solid #000 !important; padding: 2px 4px;
+      color: #000 !important;
+    }
+    .rec-table thead th{
+      background: #eee !important; color: #000 !important;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .rec-group-row td{
+      background: #ddd !important; color: #000 !important;
+      font-size: 9.5px;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .rec-table tr{ break-inside: avoid; }
+    .rec-table select, .rec-table input{
+      color: #000 !important; background: #fff !important;
+      border: none !important; -webkit-appearance: none; appearance: none;
+      font-size: 9px; padding: 0; text-align: center;
+    }
+    .rec-table td.col-check{ color: #000; font-size: 8px; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">大型貨物車 &middot; 3ヶ月定期点検</p>
-    <h1>今日の状態、いつもと違いますか？</h1>
-    <p class="sub">6つのポイントを、専門知識なしで確認できます。</p>
-    <div class="tread-bar"><div class="fill" id="progressFill"></div></div>
-    <div class="tread-label"><span>進捗</span><span id="progressText">0 / 6 項目</span></div>
+    <p class="eyebrow" id="hdEyebrow">大型貨物車 &middot; 3ヶ月定期点検</p>
+    <h1 id="hdTitle">今日の状態、いつもと違いますか？</h1>
+    <p class="sub" id="hdSub">6つのポイントを、専門知識なしで確認できます。</p>
+
+    <div class="mode-switch">
+      <button type="button" id="btnModeSimple" class="active">かんたんチェック</button>
+      <button type="button" id="btnModeRecord">点検記録簿</button>
+    </div>
+
+    <div id="simpleProgress">
+      <div class="tread-bar"><div class="fill" id="progressFill"></div></div>
+      <div class="tread-label"><span>進捗</span><span id="progressText">0 / 6 項目</span></div>
+    </div>
   </header>
 
   <main>
+    <!-- ============ かんたんチェック ============ -->
+    <div id="mode-simple">
     <div class="disclaimer">
       <strong>これは目安を確認するための簡易チェックです。</strong> 法定点検の代わりにはなりません。「要点検」が出た項目、または少しでも不安がある場合は、整備士・整備工場に確認してください。
     </div>
 
-    <!-- 1: 液量 -->
     <div class="card" data-card="1">
       <div class="card-head">
         <div class="num">1</div>
@@ -257,7 +427,6 @@
       </div>
     </div>
 
-    <!-- 2: ブレーキフルード -->
     <div class="card" data-card="2">
       <div class="card-head">
         <div class="num">2</div>
@@ -283,7 +452,6 @@
       </div>
     </div>
 
-    <!-- 3: クラッチ -->
     <div class="card" data-card="3">
       <div class="card-head">
         <div class="num">3</div>
@@ -309,7 +477,6 @@
       </div>
     </div>
 
-    <!-- 4: オイル漏れ -->
     <div class="card" data-card="4">
       <div class="card-head">
         <div class="num">4</div>
@@ -339,7 +506,6 @@
       </div>
     </div>
 
-    <!-- 5: アイドリング -->
     <div class="card" data-card="5">
       <div class="card-head">
         <div class="num">5</div>
@@ -358,7 +524,6 @@
       </div>
     </div>
 
-    <!-- 6: タイヤ -->
     <div class="card" data-card="6">
       <div class="card-head">
         <div class="num">6</div>
@@ -393,21 +558,87 @@
 
     <section class="about">
       <h2>このツールについて</h2>
-      大型トラック・トレーラーの3ヶ月定期点検の要点を、専門知識がなくてもYes/No形式で確認できる無料のセルフチェックツールです。1級自動車整備士（トラック整備の実務経験あり）が作成しています。
+      大型トラック・トレーラーの3ヶ月定期点検の要点を、専門知識がなくてもYes/No形式で確認できる無料のセルフチェックツールです。「点検記録簿」モードに切り替えると、スマホで入力して最後に記録簿として印刷（PDF保存）もできます。1級自動車整備士（トラック整備の実務経験あり）が作成しています。
       個人が作成した非公式ツールであり、法定点検・整備の代わりにはなりません。判断に迷う項目や不安がある場合は、必ず整備士・整備工場にご相談ください。
       入力した内容は端末の外に送信されません（このページ内だけで処理されます）。
     </section>
+    </div><!-- /#mode-simple -->
+
+    <!-- ============ 点検記録簿 ============ -->
+    <div id="mode-record" hidden>
+      <div class="disclaimer no-print">
+        <strong>この記録簿は個人が作成した様式です。</strong> 自動車点検基準 別表第3（単車）をもとにした<strong>下書き</strong>であり、項目の過不足・表現・3ヶ月／12ヶ月の区分は、点検実施者（整備有資格者）が必ずご確認・調整してください。入力内容はこの端末内にのみ自動保存され、外部には送信されません。
+      </div>
+
+      <div class="print-only">
+        <p class="print-title">3ヶ月定期点検 記録簿</p>
+        <p class="print-note">自動車点検基準 別表第3 に基づく（個人作成様式・要確認）</p>
+      </div>
+
+      <div class="rec-section-title">1. 基本情報</div>
+      <div class="rec-basic" id="recBasic">
+        <div class="rec-field wide"><label>使用者・事業者名</label><input type="text" name="b_owner" autocomplete="off"></div>
+        <div class="rec-field"><label>自動車登録番号／車両番号</label><input type="text" name="b_plate" autocomplete="off"></div>
+        <div class="rec-field"><label>車台番号</label><input type="text" name="b_vin" autocomplete="off"></div>
+        <div class="rec-field"><label>型式</label><input type="text" name="b_model" autocomplete="off"></div>
+        <div class="rec-field"><label>原動機の型式</label><input type="text" name="b_engine" autocomplete="off"></div>
+        <div class="rec-field"><label>点検年月日</label><input type="date" name="b_date"></div>
+        <div class="rec-field"><label>走行距離（km）</label><input type="text" inputmode="numeric" name="b_odo" autocomplete="off"></div>
+        <div class="rec-field"><label>点検実施者（氏名）</label><input type="text" name="b_inspector" autocomplete="off"></div>
+        <div class="rec-field"><label>点検場所</label><input type="text" name="b_place" autocomplete="off"></div>
+      </div>
+
+      <div class="rec-legend">
+        <b>記号の意味</b>
+        <b>レ</b>＝良好（異常なし）／
+        <b>△</b>＝分解・修理・調整などの整備をした／
+        <b>×</b>＝不良（要整備）／
+        <b>A</b>＝分解して点検した／
+        <b>／</b>＝該当なし・省略
+      </div>
+
+      <div class="rec-section-title">2. 点検項目</div>
+      <table class="rec-table">
+        <thead>
+          <tr>
+            <th>点検箇所</th>
+            <th>点検内容</th>
+            <th>結果</th>
+            <th>備考</th>
+          </tr>
+        </thead>
+        <tbody id="recBody"><!-- JSで生成 --></tbody>
+      </table>
+
+      <div class="rec-section-title">3. 特記事項・整備内容</div>
+      <div class="rec-basic">
+        <div class="rec-field wide">
+          <label>気づいた点・実施した整備・次回への申し送りなど</label>
+          <textarea name="b_memo"></textarea>
+        </div>
+      </div>
+
+      <div class="rec-actions no-print">
+        <button type="button" class="btn-primary" id="btnPrint">印刷 / PDF保存</button>
+        <button type="button" class="btn-ghost" id="btnClearRecord">入力を全部消す</button>
+      </div>
+      <p class="rec-saved-note no-print" id="savedNote">入力すると自動でこの端末に保存されます。</p>
+    </div><!-- /#mode-record -->
+
   </main>
 
   <footer>
-    大型貨物車 3ヶ月点検 簡易セルフチェック（試作版）<br>
+    大型貨物車 3ヶ月点検 簡易セルフチェック＆記録簿（試作版）<br>
     個人作成の非公式ツール — 実際の点検・整備は必ず整備士・整備工場にご確認ください。
   </footer>
 </div>
 
 <script>
+/* ============================================================
+   かんたんチェック（既存ロジック）
+   ============================================================ */
 const answers = {};
-const totalPrimary = 6; // カードの数（進捗の分母）
+const totalPrimary = 6;
 
 function setResult(key, cls, text){
   const el = document.querySelector(`[data-result="${key}"]`);
@@ -415,13 +646,11 @@ function setResult(key, cls, text){
   el.className = 'result-line show ' + cls;
   el.textContent = text;
 }
-
 function clearButtons(container){
   container.querySelectorAll('.choice-btn').forEach(b=>{
     b.classList.remove('selected-yes','selected-no','selected-neutral');
   });
 }
-
 document.querySelectorAll('.choices').forEach(group=>{
   const qkey = group.dataset.q;
   group.querySelectorAll('.choice-btn').forEach(btn=>{
@@ -431,7 +660,6 @@ document.querySelectorAll('.choices').forEach(group=>{
       if(val === 'yes') btn.classList.add('selected-yes');
       else if(val === 'no') btn.classList.add('selected-no');
       else btn.classList.add('selected-neutral');
-
       answers[qkey] = val;
       handleAnswer(qkey, val);
       updateProgress();
@@ -439,7 +667,6 @@ document.querySelectorAll('.choices').forEach(group=>{
     });
   });
 });
-
 function handleAnswer(qkey, val){
   switch(qkey){
     case 'oil_coolant':
@@ -448,12 +675,10 @@ function handleAnswer(qkey, val){
         : setResult(qkey, 'ok', '正常範囲です。');
       markCardAnswered(1);
       break;
-
     case 'brake_type':
       document.getElementById('brakeLevelQ').style.display = 'block';
       document.getElementById('brakeLevelChoices').style.display = 'flex';
       break;
-
     case 'brake_level':
       const brakeType = answers['brake_type'];
       if(brakeType === 'disc'){
@@ -467,21 +692,18 @@ function handleAnswer(qkey, val){
       }
       markCardAnswered(2);
       break;
-
     case 'clutch_shift':
       val === 'yes'
         ? setResult(qkey, 'warn', '要点検：クラッチマスター・ブースターの油圧漏れの疑いがあります。')
         : setResult(qkey, 'ok', '異常なし。');
       checkClutchDone();
       break;
-
     case 'clutch_deep':
       val === 'yes'
         ? setResult(qkey, 'warn', '要点検：クラッチの摩耗・調整不良の疑いがあります。')
         : setResult(qkey, 'ok', '異常なし。');
       checkClutchDone();
       break;
-
     case 'leak_ground':
       if(val === 'yes'){
         document.getElementById('leakLocationBlock').style.display = 'block';
@@ -492,7 +714,6 @@ function handleAnswer(qkey, val){
         markCardAnswered(4);
       }
       break;
-
     case 'leak_location':
       const locMsg = {
         front: '要点検：前寄りはエンジンオイル・冷却水系統からの漏れの可能性があります。',
@@ -503,21 +724,18 @@ function handleAnswer(qkey, val){
       setResult(qkey, 'warn', locMsg[val]);
       markCardAnswered(4);
       break;
-
     case 'idle_vibration':
       val === 'yes'
         ? setResult(qkey, 'warn', '要点検：普段との違いは重要なサインです。エンジンマウントや点火系統の点検を推奨します。')
         : setResult(qkey, 'ok', 'いつも通りです。');
       markCardAnswered(5);
       break;
-
     case 'tire_edge':
       val === 'yes'
         ? setResult(qkey, 'warn', '要点検：偏摩耗のサインです。空気圧・アライメントの確認を推奨します。')
         : setResult(qkey, 'ok', '異常なし。');
       checkTireDone();
       break;
-
     case 'tire_wave':
       val === 'yes'
         ? setResult(qkey, 'warn', 'ローテーション時期のサインです。')
@@ -526,43 +744,33 @@ function handleAnswer(qkey, val){
       break;
   }
 }
-
 function checkClutchDone(){
-  if(answers['clutch_shift'] !== undefined && answers['clutch_deep'] !== undefined){
-    markCardAnswered(3);
-  }
+  if(answers['clutch_shift'] !== undefined && answers['clutch_deep'] !== undefined) markCardAnswered(3);
 }
 function checkTireDone(){
-  if(answers['tire_edge'] !== undefined && answers['tire_wave'] !== undefined){
-    markCardAnswered(6);
-  }
+  if(answers['tire_edge'] !== undefined && answers['tire_wave'] !== undefined) markCardAnswered(6);
 }
 function markCardAnswered(n){
   const card = document.querySelector(`[data-card="${n}"]`);
   if(card) card.classList.add('answered');
 }
-
 function updateProgress(){
   const answeredCards = document.querySelectorAll('.card.answered').length;
   const pct = Math.round((answeredCards/totalPrimary)*100);
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressText').textContent = `${answeredCards} / ${totalPrimary} 項目`;
 }
-
 function updateSummary(){
   const answeredCards = document.querySelectorAll('.card.answered').length;
   const stamp = document.getElementById('stampEl');
   const note = document.getElementById('summaryNote');
-
   if(answeredCards < totalPrimary){
     stamp.className = 'stamp pending';
     stamp.textContent = '未完了';
     note.textContent = 'すべての項目に回答すると、結果が表示されます。';
     return;
   }
-
   const warnKeys = document.querySelectorAll('.result-line.warn.show').length;
-
   if(warnKeys === 0){
     stamp.className = 'stamp ok';
     stamp.textContent = '異常なし';
@@ -573,17 +781,10 @@ function updateSummary(){
     note.innerHTML = `<b>${warnKeys}件の項目で「要点検」</b>のサインが出ました。該当箇所を、整備士・整備工場に確認してください。`;
   }
 }
-
-// 最初からやり直す
 document.getElementById('resetBtn').addEventListener('click', ()=>{
   for(const k in answers) delete answers[k];
-  document.querySelectorAll('.choice-btn').forEach(b=>{
-    b.classList.remove('selected-yes','selected-no','selected-neutral');
-  });
-  document.querySelectorAll('.result-line').forEach(el=>{
-    el.className = 'result-line';
-    el.textContent = '';
-  });
+  document.querySelectorAll('.choice-btn').forEach(b=> b.classList.remove('selected-yes','selected-no','selected-neutral'));
+  document.querySelectorAll('.result-line').forEach(el=>{ el.className = 'result-line'; el.textContent = ''; });
   document.querySelectorAll('.card.answered').forEach(c=> c.classList.remove('answered'));
   document.getElementById('brakeLevelQ').style.display = 'none';
   document.getElementById('brakeLevelChoices').style.display = 'none';
@@ -592,6 +793,174 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   updateSummary();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+/* ============================================================
+   点検記録簿モード
+   ※ RECORD_ITEMS は自動車点検基準 別表第3（単車）をもとにした下書き。
+     項目の追加・削除・文言の修正はここを編集する。
+   ============================================================ */
+const RECORD_ITEMS = [
+  { group: "かじ取り装置", items: [
+    { place: "ロッド及びアーム類", check: "緩み、がた、損傷" },
+    { place: "かじ取り車輪（ホイール・アライメント）", check: "タイヤの片摩耗を目安に" },
+    { place: "パワー・ステアリング装置", check: "ベルトの緩み・損傷、油漏れ、油量" },
+  ]},
+  { group: "制動装置（ブレーキ）", items: [
+    { place: "ブレーキ・ペダル", check: "遊び、踏み込んだときの床板とのすき間" },
+    { place: "ブレーキの効き", check: "効き具合" },
+    { place: "駐車ブレーキ機構", check: "引きしろ、効き具合" },
+    { place: "ホース及びパイプ", check: "漏れ、損傷、取付状態" },
+    { place: "液量（マスタ・シリンダ等）", check: "リザーバ・タンクの液量" },
+    { place: "ブレーキ・ドラムとライニングとのすき間", check: "すき間（ドラム式）" },
+    { place: "ブレーキ・ライニング", check: "摩耗（ドラム式）" },
+    { place: "ブレーキ・ディスクとパッドとのすき間", check: "すき間（ディスク式）" },
+    { place: "ブレーキ・パッド", check: "摩耗（ディスク式）" },
+    { place: "ブレーキ・チャンバ", check: "機能、摩耗、損傷（エア式）" },
+    { place: "ブレーキ・バルブ、クイック・レリーズ・バルブ、リレー・バルブ", check: "機能（エア式）" },
+    { place: "倍力装置", check: "機能（液圧式倍力装置）" },
+  ]},
+  { group: "走行装置", items: [
+    { place: "タイヤ", check: "空気圧" },
+    { place: "タイヤ", check: "亀裂、損傷" },
+    { place: "タイヤ", check: "溝の深さ、異常な摩耗" },
+    { place: "ディスク・ホイール", check: "タイヤの取付状態（ナット・ボルトの緩み）" },
+  ]},
+  { group: "緩衝装置（サスペンション）", items: [
+    { place: "スプリング", check: "損傷" },
+    { place: "シャックル及びUボルト", check: "緩み、損傷（リーフの場合）" },
+    { place: "エア・サスペンション", check: "エア漏れ、取付部の緩み・損傷（エアサスの場合）" },
+    { place: "ショック・アブソーバ", check: "油漏れ、損傷" },
+  ]},
+  { group: "動力伝達装置", items: [
+    { place: "クラッチ", check: "ペダルの遊び、切れたときの床板とのすき間" },
+    { place: "トランスミッション、トランスファ", check: "油漏れ、油量" },
+    { place: "プロペラ・シャフト、ドライブ・シャフト", check: "連結部の緩み" },
+    { place: "デファレンシャル", check: "油漏れ、油量" },
+  ]},
+  { group: "電気装置", items: [
+    { place: "バッテリ", check: "ターミナル部の接続状態" },
+    { place: "電気配線", check: "接続部の緩み、損傷" },
+  ]},
+  { group: "原動機（エンジン）", items: [
+    { place: "潤滑装置", check: "油漏れ" },
+    { place: "燃料装置", check: "燃料漏れ" },
+    { place: "エア・クリーナ・エレメント", check: "汚れ、詰まり" },
+    { place: "排気の状態", check: "色、におい等" },
+    { place: "低速及び加速の状態", check: "（ガソリン車）" },
+  ]},
+  { group: "ばい煙・悪臭のある排気ガス等発散防止装置", items: [
+    { place: "ブローバイ・ガス還元装置", check: "メターリング・バルブの状態、配管の損傷" },
+    { place: "燃料蒸発ガス排出抑止装置", check: "配管等の損傷（ガソリン車）" },
+    { place: "一酸化炭素等発散防止装置（触媒・EGR等）", check: "取付けの緩み・損傷、機能、配管の損傷" },
+  ]},
+  { group: "その他", items: [
+    { place: "エキゾースト・パイプ及びマフラ", check: "取付けの緩み、損傷、腐食" },
+    { place: "スペア・タイヤ取付装置", check: "緩み、がた、損傷" },
+    { place: "スペア・タイヤ", check: "取付状態" },
+    { place: "ツール・ボックス", check: "取付部の緩み、損傷" },
+    { place: "シャシ各部", check: "給油脂状態" },
+  ]},
+];
+
+const RESULT_OPTIONS = ["", "レ", "△", "×", "A", "／"];
+
+function buildRecordTable(){
+  const tbody = document.getElementById('recBody');
+  let html = '';
+  RECORD_ITEMS.forEach((grp, gi)=>{
+    html += `<tr class="rec-group-row"><td colspan="4">${grp.group}</td></tr>`;
+    grp.items.forEach((it, ii)=>{
+      const base = `r_${gi}_${ii}`;
+      const opts = RESULT_OPTIONS.map(o=> `<option value="${o}">${o || '—'}</option>`).join('');
+      html += `<tr>
+        <td class="col-place">${it.place}</td>
+        <td class="col-check">${it.check || ''}</td>
+        <td class="col-result"><select name="${base}_result" data-result-select>${opts}</select></td>
+        <td class="col-note"><input type="text" name="${base}_note" autocomplete="off"></td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML = html;
+}
+
+/* --- 自動保存（この端末のみ） --- */
+const STORE_KEY = 'truck-record-v1';
+const MODE_KEY = 'truck-mode';
+
+function recordFields(){
+  return document.querySelectorAll('#mode-record [name]');
+}
+function saveRecord(){
+  try{
+    const data = {};
+    recordFields().forEach(el=>{ data[el.name] = el.value; });
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    const n = document.getElementById('savedNote');
+    if(n) n.textContent = '保存しました（この端末内）　' + new Date().toLocaleString('ja-JP');
+  }catch(e){ /* 保存できない環境でも動作は継続する */ }
+}
+function loadRecord(){
+  let data = null;
+  try{ data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); }catch(e){}
+  if(!data) return;
+  recordFields().forEach(el=>{
+    if(data[el.name] !== undefined) el.value = data[el.name];
+  });
+  document.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
+}
+function styleResultSelect(sel){
+  sel.classList.remove('res-x','res-ok');
+  if(sel.value === '×') sel.classList.add('res-x');
+  else if(sel.value === 'レ') sel.classList.add('res-ok');
+}
+
+/* --- モード切替 --- */
+const HD = {
+  simple: { eyebrow:'大型貨物車 · 3ヶ月定期点検', title:'今日の状態、いつもと違いますか？', sub:'6つのポイントを、専門知識なしで確認できます。' },
+  record: { eyebrow:'大型貨物車 · 3ヶ月定期点検 記録簿', title:'3ヶ月点検 記録簿', sub:'スマホで入力して、最後に印刷（PDF保存）できます。' }
+};
+function setMode(mode){
+  const isRec = mode === 'record';
+  document.getElementById('mode-simple').hidden = isRec;
+  document.getElementById('mode-record').hidden = !isRec;
+  document.body.classList.toggle('recmode', isRec);
+  document.getElementById('simpleProgress').style.display = isRec ? 'none' : '';
+  document.getElementById('btnModeSimple').classList.toggle('active', !isRec);
+  document.getElementById('btnModeRecord').classList.toggle('active', isRec);
+  const h = isRec ? HD.record : HD.simple;
+  document.getElementById('hdEyebrow').textContent = h.eyebrow;
+  document.getElementById('hdTitle').textContent = h.title;
+  document.getElementById('hdSub').textContent = h.sub;
+  try{ localStorage.setItem(MODE_KEY, mode); }catch(e){}
+  window.scrollTo({ top: 0 });
+}
+document.getElementById('btnModeSimple').addEventListener('click', ()=> setMode('simple'));
+document.getElementById('btnModeRecord').addEventListener('click', ()=> setMode('record'));
+
+/* --- 記録簿の操作 --- */
+buildRecordTable();
+loadRecord();
+document.getElementById('mode-record').addEventListener('input', (e)=>{
+  if(e.target.matches('[data-result-select]')) styleResultSelect(e.target);
+  saveRecord();
+});
+document.getElementById('mode-record').addEventListener('change', (e)=>{
+  if(e.target.matches('[data-result-select]')) styleResultSelect(e.target);
+  saveRecord();
+});
+document.getElementById('btnPrint').addEventListener('click', ()=> window.print());
+document.getElementById('btnClearRecord').addEventListener('click', ()=>{
+  if(!confirm('入力した内容をすべて消します。よろしいですか？')) return;
+  recordFields().forEach(el=>{ el.value = ''; });
+  document.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
+  try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+  document.getElementById('savedNote').textContent = '入力すると自動でこの端末に保存されます。';
+});
+
+/* --- 起動時：前回のモードを復元 --- */
+let startMode = 'simple';
+try{ if(localStorage.getItem(MODE_KEY) === 'record') startMode = 'record'; }catch(e){}
+setMode(startMode);
 </script>
 </body>
 </html>
