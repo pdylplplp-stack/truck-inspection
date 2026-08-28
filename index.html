@@ -283,6 +283,11 @@
   }
   .rec-table td.col-place{ width: 40%; color: var(--text); }
   .rec-table td.col-check{ width: 30%; color: var(--text-dim); font-size: 11.5px; }
+  .rec-table .mk{
+    display:inline-block; margin-left: 4px; padding: 0 4px;
+    font-family:'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--steel); border: 1px solid var(--line); border-radius: 2px;
+  }
   .rec-table td.col-result{ width: 14%; }
   .rec-table td.col-note{ width: 16%; }
   .rec-table select, .rec-table input{
@@ -380,6 +385,7 @@
       font-size: 9px; padding: 0; text-align: center;
     }
     .rec-table td.col-check{ color: #000; font-size: 8px; }
+    .rec-table .mk{ color: #000; border: 1px solid #000; font-size: 7.5px; }
   }
 </style>
 </head>
@@ -567,25 +573,24 @@
     <!-- ============ 点検記録簿 ============ -->
     <div id="mode-record" hidden>
       <div class="disclaimer no-print">
-        <strong>この記録簿は個人が作成した様式です。</strong> 自動車点検基準 別表第3（単車）をもとにした<strong>下書き</strong>であり、項目の過不足・表現・3ヶ月／12ヶ月の区分は、点検実施者（整備有資格者）が必ずご確認・調整してください。入力内容はこの端末内にのみ自動保存され、外部には送信されません。
+        <strong>この記録簿は、ご提供の実務用エクセル「３カ月点検整備記録簿」の項目に合わせて作成しています。</strong> 記号の凡例・表現・レイアウトは、点検実施者（整備有資格者）が必ずご確認ください。入力内容はこの端末内にのみ自動保存され、外部には送信されません。
       </div>
 
       <div class="print-only">
-        <p class="print-title">3ヶ月定期点検 記録簿</p>
-        <p class="print-note">自動車点検基準 別表第3 に基づく（個人作成様式・要確認）</p>
+        <p class="print-title">３か月点検整備記録簿</p>
+        <p class="print-note">自動車点検基準 別表第3 に基づく</p>
       </div>
 
       <div class="rec-section-title">1. 基本情報</div>
       <div class="rec-basic" id="recBasic">
-        <div class="rec-field wide"><label>使用者・事業者名</label><input type="text" name="b_owner" autocomplete="off"></div>
-        <div class="rec-field"><label>自動車登録番号／車両番号</label><input type="text" name="b_plate" autocomplete="off"></div>
+        <div class="rec-field wide"><label>使用者の氏名または名称</label><input type="text" name="b_owner" autocomplete="off"></div>
+        <div class="rec-field wide"><label>住所</label><input type="text" name="b_addr" autocomplete="off"></div>
+        <div class="rec-field"><label>自動車登録番号または車両番号</label><input type="text" name="b_plate" autocomplete="off"></div>
         <div class="rec-field"><label>車台番号</label><input type="text" name="b_vin" autocomplete="off"></div>
-        <div class="rec-field"><label>型式</label><input type="text" name="b_model" autocomplete="off"></div>
-        <div class="rec-field"><label>原動機の型式</label><input type="text" name="b_engine" autocomplete="off"></div>
+        <div class="rec-field"><label>点検・整備時の総走行距離（km）</label><input type="text" inputmode="numeric" name="b_odo" autocomplete="off"></div>
         <div class="rec-field"><label>点検年月日</label><input type="date" name="b_date"></div>
-        <div class="rec-field"><label>走行距離（km）</label><input type="text" inputmode="numeric" name="b_odo" autocomplete="off"></div>
-        <div class="rec-field"><label>点検実施者（氏名）</label><input type="text" name="b_inspector" autocomplete="off"></div>
-        <div class="rec-field"><label>点検場所</label><input type="text" name="b_place" autocomplete="off"></div>
+        <div class="rec-field"><label>点検整備実施者の氏名または名称</label><input type="text" name="b_inspector" autocomplete="off"></div>
+        <div class="rec-field"><label>整備完了日</label><input type="date" name="b_done"></div>
       </div>
 
       <div class="rec-legend">
@@ -594,7 +599,9 @@
         <b>△</b>＝分解・修理・調整などの整備をした／
         <b>×</b>＝不良（要整備）／
         <b>A</b>＝分解して点検した／
-        <b>／</b>＝該当なし・省略
+        <b>／</b>＝該当なし・省略<br>
+        <b>※1</b>＝3か月の走行距離が2000km以下のときは省略できる（ただし2回連続の省略は不可）／
+        <b>※2</b>＝車両総重量8t以上、または乗車定員30人以上の自動車が対象
       </div>
 
       <div class="rec-section-title">2. 点検項目</div>
@@ -610,13 +617,15 @@
         <tbody id="recBody"><!-- JSで生成 --></tbody>
       </table>
 
-      <div class="rec-section-title">3. 特記事項・整備内容</div>
+      <div class="rec-section-title">3. その他の整備、交換部品等</div>
       <div class="rec-basic">
         <div class="rec-field wide">
-          <label>気づいた点・実施した整備・次回への申し送りなど</label>
+          <label>実施した整備・交換部品・気づいた点など</label>
           <textarea name="b_memo"></textarea>
         </div>
       </div>
+
+      <p class="print-only" style="font-size:9px; margin-top:8px;">この点検整備記録簿は複写して、車載・会社にて保存してください（保存期間1年）。</p>
 
       <div class="rec-actions no-print">
         <button type="button" class="btn-primary" id="btnPrint">印刷 / PDF保存</button>
@@ -796,68 +805,84 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 
 /* ============================================================
    点検記録簿モード
-   ※ RECORD_ITEMS は自動車点検基準 別表第3（単車）をもとにした下書き。
+   ※ RECORD_ITEMS は、ユーザー提供の実務用エクセル
+     「３カ月点検整備記録簿」（自動車点検基準 別表第3）に合わせた項目。
      項目の追加・削除・文言の修正はここを編集する。
+     mark: "※1"=2000km/3ヶ月以下は省略可（2回連続不可）／"※2"=車両総重量8t以上等が対象
    ============================================================ */
 const RECORD_ITEMS = [
   { group: "かじ取り装置", items: [
-    { place: "ロッド及びアーム類", check: "緩み、がた、損傷" },
-    { place: "かじ取り車輪（ホイール・アライメント）", check: "タイヤの片摩耗を目安に" },
-    { place: "パワー・ステアリング装置", check: "ベルトの緩み・損傷、油漏れ、油量" },
+    { place: "ロッド、アーム類（ステアリング・リンケージ）", check: "緩み、がた、損傷", mark: "※1" },
+    { place: "ナックル", check: "連結部のがた" },
+    { place: "パワー・ステアリング装置", check: "ベルトの緩みと損傷" },
+    { place: "パワー・ステアリング装置", check: "オイル漏れ、オイル量", mark: "※1" },
   ]},
   { group: "制動装置（ブレーキ）", items: [
     { place: "ブレーキ・ペダル", check: "遊び、踏み込んだときの床板とのすき間" },
-    { place: "ブレーキの効き", check: "効き具合" },
-    { place: "駐車ブレーキ機構", check: "引きしろ、効き具合" },
-    { place: "ホース及びパイプ", check: "漏れ、損傷、取付状態" },
-    { place: "液量（マスタ・シリンダ等）", check: "リザーバ・タンクの液量" },
-    { place: "ブレーキ・ドラムとライニングとのすき間", check: "すき間（ドラム式）" },
-    { place: "ブレーキ・ライニング", check: "摩耗（ドラム式）" },
-    { place: "ブレーキ・ディスクとパッドとのすき間", check: "すき間（ディスク式）" },
-    { place: "ブレーキ・パッド", check: "摩耗（ディスク式）" },
-    { place: "ブレーキ・チャンバ", check: "機能、摩耗、損傷（エア式）" },
-    { place: "ブレーキ・バルブ、クイック・レリーズ・バルブ、リレー・バルブ", check: "機能（エア式）" },
-    { place: "倍力装置", check: "機能（液圧式倍力装置）" },
+    { place: "ブレーキ・ペダル", check: "ブレーキの効き具合" },
+    { place: "駐車ブレーキ機構", check: "引きしろ（踏みしろ）" },
+    { place: "駐車ブレーキ機構", check: "ブレーキの効き具合" },
+    { place: "ホース及びパイプ", check: "漏れ、損傷及び取付状態" },
+    { place: "リザーバ・タンク", check: "ブレーキ液の量" },
+    { place: "ブレーキ・チャンバ", check: "ロッドのストローク" },
+    { place: "ブレーキ・ドラム、ブレーキ・シュー", check: "ドラムとライニングとのすき間" },
+    { place: "ブレーキ・ドラム、ブレーキ・シュー", check: "シューの摺動部分及びライニングの摩耗", mark: "※1" },
+    { place: "ブレーキ・ディスク及びパッド", check: "ディスクとパッドとのすき間", mark: "※1" },
+    { place: "ブレーキ・ディスク及びパッド", check: "パッドの摩耗", mark: "※1" },
+    { place: "センタ・ブレーキ・ドラム、ライニング", check: "ドラムの取付けの緩み" },
+    { place: "センタ・ブレーキ・ドラム、ライニング", check: "ドラムとライニングとのすき間" },
   ]},
   { group: "走行装置", items: [
-    { place: "タイヤ", check: "空気圧" },
-    { place: "タイヤ", check: "亀裂、損傷" },
-    { place: "タイヤ", check: "溝の深さ、異常な摩耗" },
-    { place: "ディスク・ホイール", check: "タイヤの取付状態（ナット・ボルトの緩み）" },
+    { place: "ホイール", check: "タイヤの状態", mark: "※1" },
+    { place: "ホイール", check: "ホイール・ナット及びホイール・ボルトの緩み" },
+    { place: "ホイール", check: "フロント・ホイール・ベアリングのがた", mark: "※1" },
   ]},
   { group: "緩衝装置（サスペンション）", items: [
-    { place: "スプリング", check: "損傷" },
-    { place: "シャックル及びUボルト", check: "緩み、損傷（リーフの場合）" },
-    { place: "エア・サスペンション", check: "エア漏れ、取付部の緩み・損傷（エアサスの場合）" },
-    { place: "ショック・アブソーバ", check: "油漏れ、損傷" },
+    { place: "リーフ・サスペンション", check: "スプリングの損傷" },
+    { place: "エア・サスペンション", check: "エア漏れ" },
+    { place: "エア・サスペンション", check: "ベローズの損傷", mark: "※1" },
+    { place: "エア・サスペンション", check: "取付部及び連結部の緩み並びに損傷", mark: "※1" },
+    { place: "ショック・アブソーバ", check: "油漏れ及び損傷" },
   ]},
   { group: "動力伝達装置", items: [
     { place: "クラッチ", check: "ペダルの遊び、切れたときの床板とのすき間" },
-    { place: "トランスミッション、トランスファ", check: "油漏れ、油量" },
-    { place: "プロペラ・シャフト、ドライブ・シャフト", check: "連結部の緩み" },
-    { place: "デファレンシャル", check: "油漏れ、油量" },
+    { place: "クラッチ", check: "作用" },
+    { place: "クラッチ", check: "液量" },
+    { place: "トランスミッション・トランスファー", check: "オイル漏れ、オイル量", mark: "※1" },
+    { place: "プロペラ・シャフト、ドライブ・シャフト", check: "連結部の緩み", mark: "※1" },
+    { place: "デファレンシャル", check: "オイル漏れ、オイル量", mark: "※1" },
   ]},
   { group: "電気装置", items: [
+    { place: "点火装置", check: "点火プラグ（スパーク・プラグ）の状態", mark: "※1" },
+    { place: "点火装置", check: "点火時期" },
     { place: "バッテリ", check: "ターミナル部の接続状態" },
-    { place: "電気配線", check: "接続部の緩み、損傷" },
+    { place: "電気配線", check: "接続部の緩み及び損傷" },
   ]},
   { group: "原動機（エンジン）", items: [
-    { place: "潤滑装置", check: "油漏れ" },
+    { place: "本体", check: "低速と加速の状態" },
+    { place: "本体", check: "排気の状態" },
+    { place: "本体", check: "エア・クリーナ・エレメントの状態", mark: "※1" },
+    { place: "潤滑装置", check: "オイル漏れ", mark: "※1" },
     { place: "燃料装置", check: "燃料漏れ" },
-    { place: "エア・クリーナ・エレメント", check: "汚れ、詰まり" },
-    { place: "排気の状態", check: "色、におい等" },
-    { place: "低速及び加速の状態", check: "（ガソリン車）" },
+    { place: "冷却装置", check: "ファン・ベルトの緩みと損傷" },
   ]},
-  { group: "ばい煙・悪臭のある排気ガス等発散防止装置", items: [
-    { place: "ブローバイ・ガス還元装置", check: "メターリング・バルブの状態、配管の損傷" },
-    { place: "燃料蒸発ガス排出抑止装置", check: "配管等の損傷（ガソリン車）" },
-    { place: "一酸化炭素等発散防止装置（触媒・EGR等）", check: "取付けの緩み・損傷、機能、配管の損傷" },
+  { group: "エグゾースト・パイプとマフラ", items: [
+    { place: "エグゾースト・パイプとマフラ", check: "取付の緩みと損傷", mark: "※1" },
+  ]},
+  { group: "エア・コンプレッサ", items: [
+    { place: "エア・タンク", check: "凝水" },
+  ]},
+  { group: "高圧ガスを燃料とする燃料装置等", items: [
+    { place: "導管、継手部", check: "ガス漏れと損傷" },
+  ]},
+  { group: "車枠、車体", items: [
+    { place: "非常口の扉", check: "機能" },
+    { place: "車枠・車体", check: "緩み及び損傷" },
+    { place: "スペアタイヤ取付装置", check: "緩み、がた及び損傷", mark: "※2" },
+    { place: "スペアタイヤ", check: "取付状態", mark: "※2" },
+    { place: "ツールボックス", check: "取付部の緩み及び損傷", mark: "※2" },
   ]},
   { group: "その他", items: [
-    { place: "エキゾースト・パイプ及びマフラ", check: "取付けの緩み、損傷、腐食" },
-    { place: "スペア・タイヤ取付装置", check: "緩み、がた、損傷" },
-    { place: "スペア・タイヤ", check: "取付状態" },
-    { place: "ツール・ボックス", check: "取付部の緩み、損傷" },
     { place: "シャシ各部", check: "給油脂状態" },
   ]},
 ];
@@ -868,13 +893,14 @@ function buildRecordTable(){
   const tbody = document.getElementById('recBody');
   let html = '';
   RECORD_ITEMS.forEach((grp, gi)=>{
-    html += `<tr class="rec-group-row"><td colspan="4">${grp.group}</td></tr>`;
+    html += `<tr class="rec-group-row"><td colspan="4">■ ${grp.group}</td></tr>`;
     grp.items.forEach((it, ii)=>{
       const base = `r_${gi}_${ii}`;
       const opts = RESULT_OPTIONS.map(o=> `<option value="${o}">${o || '—'}</option>`).join('');
+      const mk = it.mark ? ` <span class="mk">${it.mark}</span>` : '';
       html += `<tr>
         <td class="col-place">${it.place}</td>
-        <td class="col-check">${it.check || ''}</td>
+        <td class="col-check">${it.check || ''}${mk}</td>
         <td class="col-result"><select name="${base}_result" data-result-select>${opts}</select></td>
         <td class="col-note"><input type="text" name="${base}_note" autocomplete="off"></td>
       </tr>`;
@@ -884,7 +910,7 @@ function buildRecordTable(){
 }
 
 /* --- 自動保存（この端末のみ） --- */
-const STORE_KEY = 'truck-record-v1';
+const STORE_KEY = 'truck-record-v2';
 const MODE_KEY = 'truck-mode';
 
 function recordFields(){
