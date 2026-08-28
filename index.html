@@ -289,11 +289,71 @@
   }
   .rec-saved-note{ font-size: 11.5px; color: var(--text-dim); margin-top: 10px; }
 
+  /* ===== 入力方法の切替（ガイド / 表） ===== */
+  .subswitch{ display:flex; gap: 6px; margin: 14px 0 4px; }
+  .subswitch button{
+    flex: 1;
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 12.5px; font-weight: 600;
+    padding: 8px 6px; border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-panel); color: var(--text-dim);
+    cursor: pointer;
+  }
+  .subswitch button.active{ background: var(--steel); border-color: var(--steel); color: #fff; }
+
+  /* ===== ガイド入力カード ===== */
+  .grouphd{
+    font-family:'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 15px; letter-spacing: 0.03em; color: var(--amber);
+    margin: 22px 0 8px;
+  }
+  .gcard{
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 14px 12px; margin-bottom: 12px;
+  }
+  .gcard.done{ border-color: var(--steel); }
+  .gq{ font-size: 14px; line-height: 1.6; color: var(--text); margin-bottom: 10px; }
+  .gq .gcheck{ color: var(--text-dim); }
+  .gq .mk{
+    display:inline-block; margin-left: 4px; padding: 0 4px;
+    font-family:'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--steel); border: 1px solid var(--line); border-radius: 2px;
+  }
+  .gbtns, .gacts{ display:flex; gap: 7px; flex-wrap: wrap; }
+  .gacts{ margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
+  .gbtns button, .gacts button{
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 9px 14px; border-radius: var(--radius);
+    border: 1px solid var(--line); background: var(--bg-panel-raised); color: var(--text);
+    cursor: pointer;
+  }
+  .gbtns button.gsmall, .gacts button{ font-size: 12px; padding: 7px 11px; color: var(--text-dim); }
+  .gbtns button.sel{ background: var(--ok); border-color: var(--ok); color: #fff; }
+  .gbtns button.sel-act{ background: var(--amber); border-color: var(--amber); color: var(--bg); }
+  .gbtns button.sel-na{ background: var(--steel); border-color: var(--steel); color: #fff; }
+  .gacts button.sel{ background: var(--amber); border-color: var(--amber); color: var(--bg); }
+  .gnote{
+    margin-top: 10px; width: 100%;
+    font-family:'IBM Plex Sans JP', sans-serif; font-size: 15px; color: var(--text);
+    background: var(--bg-panel-raised); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 8px 10px;
+  }
+  .gstate{ margin-top: 8px; font-size: 12px; color: var(--text-dim); }
+  .gstate b{ color: var(--text); }
+  .gprogress{
+    position: sticky; top: 118px; z-index: 5;
+    background: rgba(27,29,30,0.96); backdrop-filter: blur(4px);
+    padding: 8px 0 6px; margin-bottom: 6px;
+    font-family:'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-dim);
+  }
+
   /* ===== 印刷シート（画面では非表示） ===== */
   .print-sheet{ display:none; }
 
   @media print{
-    @page{ size: A4 portrait; margin: 10mm; }
+    @page{ size: A4 landscape; margin: 8mm; }
     html, body{ background:#fff !important; color:#000 !important; background-image:none !important; }
     .wrap{ max-width:none; padding:0; margin:0; }
     header, footer, .no-print{ display:none !important; }
@@ -302,35 +362,35 @@
     #recInteractive, #dailyInteractive{ display:none !important; }
     .print-sheet{ display:block !important; }
 
-    .ps-title{ font-size:15px; font-weight:700; text-align:center; margin:0 0 2px; letter-spacing:0.08em; }
-    .ps-note{ font-size:8px; text-align:center; color:#333; margin:0 0 6px; }
+    .ps-title{ font-size:17px; font-weight:700; text-align:center; margin:0 0 2px; letter-spacing:0.1em; }
+    .ps-note{ font-size:9px; text-align:center; color:#333; margin:0 0 6px; }
     .ps-basic{
-      display:grid; grid-template-columns: 1fr 1fr; gap:1px 10px;
-      border:1px solid #000; padding:4px 6px; font-size:8.7px; margin-bottom:5px;
+      display:grid; grid-template-columns: repeat(4, 1fr); gap:2px 14px;
+      border:1px solid #000; padding:5px 8px; font-size:10px; margin-bottom:6px;
     }
     .ps-basic .k{ color:#333; }
     .ps-basic .v{ font-weight:600; }
     .ps-legend{
-      font-size:7.6px; border:1px solid #000; padding:3px 6px;
-      margin-bottom:6px; line-height:1.5;
+      font-size:9px; border:1px solid #000; padding:4px 8px;
+      margin-bottom:7px; line-height:1.55;
     }
-    .pcols{ column-count:3; column-gap:7px; }
+    .pcols{ column-count:3; column-gap:10px; }
     .pcols.daily{ column-count:2; }
-    .pgroup{ break-inside:avoid; margin-bottom:5px; }
+    .pgroup{ break-inside:avoid; margin-bottom:6px; }
     .pgh{
-      font-weight:700; font-size:8.6px; background:#ddd; padding:1px 3px;
+      font-weight:700; font-size:10.5px; background:#ddd; padding:2px 4px;
       -webkit-print-color-adjust:exact; print-color-adjust:exact;
     }
     .pr{
-      display:flex; justify-content:space-between; gap:3px;
-      font-size:7.7px; line-height:1.45; border-bottom:1px solid #ccc; padding:1px 2px;
+      display:flex; justify-content:space-between; gap:4px;
+      font-size:9.5px; line-height:1.55; border-bottom:1px solid #ccc; padding:1px 3px;
     }
     .pr .pi{ flex:1; }
-    .pr .pi .mkp{ border:1px solid #000; font-size:6.4px; padding:0 2px; margin-left:2px; }
+    .pr .pi .mkp{ border:1px solid #000; font-size:7.5px; padding:0 2px; margin-left:3px; }
     .pr .pi .nt{ color:#333; }
-    .pr .ps{ min-width:15px; text-align:center; font-weight:700; border-left:1px solid #999; padding-left:2px; }
-    .ps-memo{ font-size:8px; border:1px solid #000; padding:3px 6px; margin-top:5px; white-space:pre-wrap; line-height:1.4; }
-    .ps-foot{ font-size:7.4px; margin-top:4px; color:#333; }
+    .pr .ps{ min-width:20px; text-align:center; font-weight:700; border-left:1px solid #999; padding-left:3px; font-size:11px; }
+    .ps-memo{ font-size:9.5px; border:1px solid #000; padding:4px 8px; margin-top:6px; white-space:pre-wrap; line-height:1.5; }
+    .ps-foot{ font-size:8.5px; margin-top:5px; color:#333; }
   }
 </style>
 </head>
@@ -538,12 +598,19 @@
         <div class="rec-legend" id="recLegend"></div>
 
         <div class="rec-section-title">2. 点検項目</div>
-        <table class="rec-table">
-          <thead>
-            <tr><th>点検箇所</th><th>点検内容</th><th>結果</th><th>備考</th></tr>
-          </thead>
-          <tbody id="recBody"></tbody>
-        </table>
+        <div class="subswitch">
+          <button type="button" id="btnRecGuide" class="active">ガイドで入力</button>
+          <button type="button" id="btnRecTable">表で入力</button>
+        </div>
+        <div id="recGuide"></div>
+        <div id="recTableWrap" hidden>
+          <table class="rec-table">
+            <thead>
+              <tr><th>点検箇所</th><th>点検内容</th><th>結果</th><th>備考</th></tr>
+            </thead>
+            <tbody id="recBody"></tbody>
+          </table>
+        </div>
 
         <div class="rec-section-title">3. その他の整備、交換部品等</div>
         <div class="rec-basic">
@@ -580,12 +647,19 @@
         <div class="rec-legend" id="dailyLegend"></div>
 
         <div class="rec-section-title">2. 点検項目</div>
-        <table class="rec-table">
-          <thead>
-            <tr><th>点検箇所</th><th>点検内容</th><th>結果</th><th>備考</th></tr>
-          </thead>
-          <tbody id="dailyBody"></tbody>
-        </table>
+        <div class="subswitch">
+          <button type="button" id="btnDailyGuide" class="active">ガイドで入力</button>
+          <button type="button" id="btnDailyTable">表で入力</button>
+        </div>
+        <div id="dailyGuide"></div>
+        <div id="dailyTableWrap" hidden>
+          <table class="rec-table">
+            <thead>
+              <tr><th>点検箇所</th><th>点検内容</th><th>結果</th><th>備考</th></tr>
+            </thead>
+            <tbody id="dailyBody"></tbody>
+          </table>
+        </div>
 
         <div class="rec-section-title">3. 気づいた点</div>
         <div class="rec-basic">
@@ -907,6 +981,121 @@ function styleResultSelect(sel){
   else if(sel.value && sel.value !== '／' && sel.value !== 'P') sel.classList.add('res-act');
 }
 
+/* ============================================================
+   ガイド入力（質問形式）— 表と同じ隠しフィールドを読み書きする
+   ============================================================ */
+const SYM_LABEL = {
+  'レ':'点検（異常なし）', '×':'交換', 'A':'調整', 'C':'清掃', 'P':'省略',
+  '○':'分解', '△':'修理', 'T':'締付', 'L':'給油', '／':'該当なし'
+};
+
+function buildGuide(containerId, groups, prefix){
+  const c = document.getElementById(containerId);
+  let html = `<div class="gprogress">0 / 0 項目 回答済み</div>`;
+  groups.forEach((grp, gi)=>{
+    html += `<div class="grouphd">■ ${escHtml(grp.group)}</div>`;
+    grp.items.forEach((it, ii)=>{
+      const base = `${prefix}_${gi}_${ii}`;
+      const mk = it.mark ? ` <span class="mk">${it.mark}</span>` : '';
+      html += `<div class="gcard" data-target="${base}">
+        <div class="gq"><b>${escHtml(it.place)}</b>：<span class="gcheck">${escHtml(it.check || '')}</span>${mk}</div>
+        <div class="gbtns">
+          <button type="button" data-sym="レ">異常なし</button>
+          <button type="button" data-act>整備した…</button>
+          <button type="button" data-sym="／">該当なし</button>
+          <button type="button" class="gsmall" data-sym="P">省略</button>
+        </div>
+        <div class="gacts" hidden>
+          <button type="button" data-sym="×">交換</button>
+          <button type="button" data-sym="△">修理</button>
+          <button type="button" data-sym="A">調整</button>
+          <button type="button" data-sym="C">清掃</button>
+          <button type="button" data-sym="○">分解</button>
+          <button type="button" data-sym="T">締付</button>
+          <button type="button" data-sym="L">給油</button>
+        </div>
+        <input type="text" class="gnote" placeholder="備考（任意）">
+        <div class="gstate">未回答</div>
+      </div>`;
+    });
+  });
+  c.innerHTML = html;
+}
+
+function updateGuideCard(card, root){
+  const base = card.dataset.target;
+  const sel = root.querySelector(`[name="${base}_result"]`);
+  const noteEl = root.querySelector(`[name="${base}_note"]`);
+  const val = sel ? sel.value : '';
+  const gacts = card.querySelector('.gacts');
+  card.querySelectorAll('.gbtns button, .gacts button').forEach(b=> b.classList.remove('sel','sel-act','sel-na'));
+  if(val === 'レ'){
+    card.querySelector('[data-sym="レ"]').classList.add('sel');
+    gacts.hidden = true;
+  } else if(val === '／'){
+    card.querySelector('[data-sym="／"]').classList.add('sel-na');
+    gacts.hidden = true;
+  } else if(val === 'P'){
+    card.querySelector('[data-sym="P"]').classList.add('sel-na');
+    gacts.hidden = true;
+  } else if(val){
+    card.querySelector('[data-act]').classList.add('sel-act');
+    gacts.hidden = false;
+    const ab = gacts.querySelector(`[data-sym="${val}"]`);
+    if(ab) ab.classList.add('sel');
+  }
+  const gstate = card.querySelector('.gstate');
+  gstate.innerHTML = val
+    ? `記入：<b>${escHtml(val)}</b>（${escHtml(SYM_LABEL[val] || '')}）`
+    : '未回答';
+  card.classList.toggle('done', !!val);
+  const gn = card.querySelector('.gnote');
+  if(noteEl && gn && gn.value !== noteEl.value) gn.value = noteEl.value;
+}
+
+function updateGuideProgress(container){
+  const cards = container.querySelectorAll('.gcard');
+  let done = 0;
+  cards.forEach(c=>{ if(c.classList.contains('done')) done++; });
+  const p = container.querySelector('.gprogress');
+  if(p) p.textContent = `${done} / ${cards.length} 項目 回答済み`;
+}
+
+function syncGuide(container, root){
+  container.querySelectorAll('.gcard').forEach(card=> updateGuideCard(card, root));
+  updateGuideProgress(container);
+}
+
+function wireGuide(container, root){
+  container.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button');
+    const card = e.target.closest('.gcard');
+    if(!btn || !card) return;
+    if(btn.hasAttribute('data-act')){
+      const gacts = card.querySelector('.gacts');
+      gacts.hidden = !gacts.hidden;
+      return;
+    }
+    const sym = btn.getAttribute('data-sym');
+    if(sym == null) return;
+    const sel = root.querySelector(`[name="${card.dataset.target}_result"]`);
+    if(!sel) return;
+    sel.value = (sel.value === sym) ? '' : sym;
+    sel.dispatchEvent(new Event('input', { bubbles:true }));
+    updateGuideCard(card, root);
+    updateGuideProgress(container);
+  });
+  container.addEventListener('input', (e)=>{
+    if(!e.target.classList.contains('gnote')) return;
+    const card = e.target.closest('.gcard');
+    const noteEl = root.querySelector(`[name="${card.dataset.target}_note"]`);
+    if(noteEl){
+      noteEl.value = e.target.value;
+      noteEl.dispatchEvent(new Event('input', { bubbles:true }));
+    }
+  });
+}
+
 /* --- 自動保存（この端末のみ） --- */
 const MODE_KEY = 'truck-mode';
 const STORE = { record: 'truck-record-v3', daily: 'truck-daily-v1' };
@@ -1013,41 +1202,70 @@ document.getElementById('dailyLegend').innerHTML = LEGEND_TEXT;
 
 buildTable('recBody', RECORD_ITEMS, 'r');
 buildTable('dailyBody', DAILY_ITEMS, 'd');
+buildGuide('recGuide', RECORD_ITEMS, 'r');
+buildGuide('dailyGuide', DAILY_ITEMS, 'd');
 
 const recRoot = document.getElementById('mode-record');
 const dailyRoot = document.getElementById('mode-daily');
+const recGuideEl = document.getElementById('recGuide');
+const dailyGuideEl = document.getElementById('dailyGuide');
 loadStore(STORE.record, recRoot);
 loadStore(STORE.daily, dailyRoot);
 
-function wireRecordish(root, storeKey, savedNoteId, printKind){
-  root.addEventListener('input', (e)=>{
+function wireRecordish(root, storeKey, savedNoteId, printKind, guideEl){
+  function onEdit(e){
     if(e.target.matches('[data-result-select]')) styleResultSelect(e.target);
     saveStore(storeKey, root);
     buildPrintSheet(printKind);
+  }
+  root.addEventListener('input', (e)=>{
+    onEdit(e);
     const n = document.getElementById(savedNoteId);
     if(n) n.textContent = '保存しました（この端末内）　' + new Date().toLocaleString('ja-JP');
   });
-  root.addEventListener('change', (e)=>{
-    if(e.target.matches('[data-result-select]')) styleResultSelect(e.target);
-    saveStore(storeKey, root);
-    buildPrintSheet(printKind);
-  });
+  root.addEventListener('change', onEdit);
 }
-wireRecordish(recRoot, STORE.record, 'savedNoteRecord', 'record');
-wireRecordish(dailyRoot, STORE.daily, 'savedNoteDaily', 'daily');
+wireRecordish(recRoot, STORE.record, 'savedNoteRecord', 'record', recGuideEl);
+wireRecordish(dailyRoot, STORE.daily, 'savedNoteDaily', 'daily', dailyGuideEl);
+wireGuide(recGuideEl, recRoot);
+wireGuide(dailyGuideEl, dailyRoot);
+syncGuide(recGuideEl, recRoot);
+syncGuide(dailyGuideEl, dailyRoot);
 
-function clearGroup(root, storeKey, savedNoteId){
+function wireSubSwitch(guideBtnId, tableBtnId, guideId, tableWrapId, viewKey, root){
+  const gb = document.getElementById(guideBtnId), tb = document.getElementById(tableBtnId);
+  const g = document.getElementById(guideId), t = document.getElementById(tableWrapId);
+  function set(view){
+    const isGuide = view !== 'table';
+    g.hidden = !isGuide; t.hidden = isGuide;
+    gb.classList.toggle('active', isGuide);
+    tb.classList.toggle('active', !isGuide);
+    try{ localStorage.setItem(viewKey, isGuide ? 'guide' : 'table'); }catch(e){}
+    if(isGuide) syncGuide(g, root);
+  }
+  gb.addEventListener('click', ()=> set('guide'));
+  tb.addEventListener('click', ()=> set('table'));
+  let v = 'guide';
+  try{ if(localStorage.getItem(viewKey) === 'table') v = 'table'; }catch(e){}
+  set(v);
+}
+wireSubSwitch('btnRecGuide', 'btnRecTable', 'recGuide', 'recTableWrap', 'truck-record-view', recRoot);
+wireSubSwitch('btnDailyGuide', 'btnDailyTable', 'dailyGuide', 'dailyTableWrap', 'truck-daily-view', dailyRoot);
+
+function clearGroup(root, storeKey, savedNoteId, guideEl){
   if(!confirm('入力した内容をすべて消します。よろしいですか？')) return;
   fieldsIn(root).forEach(el=>{ el.value = ''; });
   root.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
   try{ localStorage.removeItem(storeKey); }catch(e){}
+  if(guideEl) syncGuide(guideEl, root);
+  buildPrintSheet(root.id === 'mode-record' ? 'record' : 'daily');
   const n = document.getElementById(savedNoteId);
   if(n) n.textContent = '入力すると自動でこの端末に保存されます。';
 }
 document.getElementById('btnPrintRecord').addEventListener('click', ()=>{ buildPrintSheet('record'); window.print(); });
 document.getElementById('btnPrintDaily').addEventListener('click', ()=>{ buildPrintSheet('daily'); window.print(); });
-document.getElementById('btnClearRecord').addEventListener('click', ()=> clearGroup(recRoot, STORE.record, 'savedNoteRecord'));
-document.getElementById('btnClearDaily').addEventListener('click', ()=> clearGroup(dailyRoot, STORE.daily, 'savedNoteDaily'));
+document.getElementById('btnClearRecord').addEventListener('click', ()=> clearGroup(recRoot, STORE.record, 'savedNoteRecord', recGuideEl));
+document.getElementById('btnClearDaily').addEventListener('click', ()=> clearGroup(dailyRoot, STORE.daily, 'savedNoteDaily', dailyGuideEl));
 
 window.addEventListener('beforeprint', ()=>{
   if(document.body.classList.contains('recmode')) buildPrintSheet('record');
