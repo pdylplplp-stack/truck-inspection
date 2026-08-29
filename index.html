@@ -404,6 +404,59 @@
   .vp-del{ border-color: var(--warn); color: #e5a49c; }
   .vp-note{ flex-basis: 100%; margin: 2px 0 0; font-size: 11px; color: var(--text-dim); line-height: 1.6; }
 
+  /* ===== 分解（他の結果と併記） ===== */
+  .rec-table td.col-result{ white-space: normal; }
+  .disasm-btn{
+    display: block; width: 100%; margin-bottom: 4px;
+    font-family:'IBM Plex Sans JP', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 4px 4px; border-radius: var(--radius);
+    border: 1px dashed var(--steel); background: var(--bg-panel-raised); color: var(--text-dim);
+    cursor: pointer;
+  }
+  .disasm-btn.on{ border-style: solid; background: var(--steel); color: #fff; }
+  .gdisasm{ margin-top: 8px; }
+  .gdisasm button{
+    font-family:'IBM Plex Sans JP', sans-serif; font-size: 12px; font-weight: 600;
+    padding: 7px 12px; border-radius: var(--radius);
+    border: 1px dashed var(--steel); background: var(--bg-panel-raised); color: var(--text-dim);
+    cursor: pointer;
+  }
+  .gdisasm button.on{ border-style: solid; background: var(--steel); color: #fff; }
+  .gstate .mark-dis{
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 1.5em; height: 1.5em; padding: 0 .15em;
+    border: 1px solid currentColor; border-radius: 50%;
+    font-weight: 700; line-height: 1; color: var(--amber);
+  }
+
+  /* ===== 車両の確認ステップ ===== */
+  #vehicleCheck{ display: none; }
+  #mode-simple.vcheck-on > .disclaimer,
+  #mode-simple.vcheck-on > .card,
+  #mode-simple.vcheck-on > .summary,
+  #mode-simple.vcheck-on > .about{ display: none; }
+  #mode-simple.vcheck-on #vehicleCheck{ display: block; }
+  .vcheck{
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 20px 18px; margin-top: 8px;
+  }
+  .vcheck h2{
+    font-family:'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px;
+    margin: 0 0 4px; color: var(--text);
+  }
+  .vcheck .vc-sub{ font-size: 12.5px; color: var(--text-dim); margin: 0 0 18px; line-height: 1.6; }
+  .vc-q{ margin-bottom: 16px; }
+  .vc-q .vc-label{ font-size: 13.5px; color: var(--text); margin-bottom: 8px; font-weight: 600; }
+  .vc-opts{ display: flex; gap: 8px; flex-wrap: wrap; }
+  .vc-opts button{
+    font-family:'IBM Plex Sans JP', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 9px 14px; border-radius: var(--radius);
+    border: 1px solid var(--line); background: var(--bg-panel-raised); color: var(--text);
+    cursor: pointer;
+  }
+  .vc-opts button.sel{ background: var(--amber); border-color: var(--amber); color: var(--bg); }
+  .vc-actions{ display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
   /* ===== 印刷シート =====
      画面では非表示。印刷時と採寸時のみ表示。
      文字サイズはすべて em で、.print-sheet の font-size(=--ps-scale倍) に追従する。
@@ -446,6 +499,12 @@
   .pr .pi .mkp{ border:1px solid #000; font-size:.78em; padding:0 .2em; margin-left:.25em; }
   .pr .pi .nt{ color:#333; }
   .pr .ps{ min-width:1.7em; text-align:center; font-weight:700; border-left:1px solid #999; padding-left:.25em; font-size:1.05em; }
+  .pr .ps .ps-dis{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:1.5em; height:1.5em; padding:0 .1em; line-height:1;
+    border:1px solid #000; border-radius:50%;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
   .ps-memo{ font-size:.95em; border:1px solid #000; padding:.4em .7em; margin-top:.5em; white-space:pre-wrap; line-height:1.5; }
   .ps-foot{ font-size:.8em; margin-top:.4em; color:#333; }
 
@@ -633,9 +692,11 @@
       <div class="stamp pending" id="stampEl">未完了</div>
       <p class="summary-note" id="summaryNote">すべての項目に回答すると、結果が表示されます。</p>
       <button class="to-record no-print" id="btnToRecord" type="button">この内容で3ヶ月点検整備記録簿を作る</button>
-      <p class="to-record-hint no-print" id="toRecordHint">回答した項目を記録簿に下書きします。基本情報の入力と、印の付いた項目の確認は、記録簿の画面で行ってください。</p>
+      <p class="to-record-hint no-print" id="toRecordHint">次に車両の確認（数問）をしてから、記録簿に下書きします。基本情報の入力などは記録簿の画面で行ってください。</p>
       <div><button class="reset-btn" id="resetBtn" type="button">最初からやり直す</button></div>
     </div>
+
+    <div id="vehicleCheck"></div>
 
     <section class="about">
       <h2>このツールについて</h2>
@@ -940,7 +1001,8 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 /* ============================================================
    かんたん診断 → 3ヶ月点検整備記録簿 への下書き反映
    ・答えを 別表第3（RECORD_ITEMS）の [グループ番号, 項目番号] に対応させる
-   ・「異常なし」→ その行に レ／「要点検」→ 結果は空欄のまま備考に理由＋要確認マーク
+   ・「良好」→ その行に レ／「要点検」→ 結果は空欄のまま備考に理由＋要確認マーク
+   ・マップ対象外の項目も「良好（レ）」で下書き（要確認・入力済みは除く）
    ============================================================ */
 const SIMPLE_TO_RECORD = {
   oil_coolant:    { rows: [[6,3]],       warn: 'かんたん診断：オイル／クーラントの量が減少。漏れ・異常消費を点検。' },
@@ -979,7 +1041,7 @@ function applyRecordFlags(flags){
   });
 }
 
-function reflectToRecord(){
+function reflectToRecord(cfg){
   const recRootEl = document.getElementById('mode-record');
   const setField = (name, val)=>{
     const f = recRootEl.querySelector(`[name="${name}"]`);
@@ -1032,6 +1094,23 @@ function reflectToRecord(){
     setField(`r_${k}_result`, 'レ');
   });
 
+  // 車両の確認から「該当なし（／）」を記入（要確認は除く）
+  const flagSet = new Set(flags);
+  const naSet = cfg ? naKeysFromConfig(cfg) : new Set();
+  let naCount = 0;
+  naSet.forEach(k=>{
+    if(flagSet.has('r_' + k)) return;
+    setField(`r_${k}_result`, '／');
+    naCount++;
+  });
+
+  // 残りの項目は「良好（レ）」で下書き（要確認・該当なし・入力済みは除く）
+  recRootEl.querySelectorAll('[data-result-select]').forEach(selEl=>{
+    const nm = selEl.getAttribute('name');            // 例 r_3_2_result
+    if(flagSet.has(nm.replace(/_result$/, ''))) return;
+    if(selEl.value === '') setField(nm, 'レ');
+  });
+
   try{ localStorage.setItem('truck-record-flags', JSON.stringify(flags)); }catch(e){}
 
   buildPrintSheet('record');
@@ -1043,10 +1122,119 @@ function reflectToRecord(){
   if(banner){
     banner.className = 'rec-reflect no-print show';
     banner.innerHTML = flags.length
-      ? `かんたん診断の結果を<b>下書き</b>しました。<b>要確認 ${flags.length} 項目</b>に印を付けています。基本情報を入力し、印の付いた項目の点検結果（レ／交換／調整 など）を選んでください。この下書きは必ず点検実施者がご確認ください。`
-      : `かんたん診断の結果を<b>下書き</b>しました（気になる項目はありませんでした）。基本情報を入力し、残りの項目を確認してから印刷してください。`;
+      ? `かんたん診断と車両の確認から<b>下書き</b>しました。<b>要確認 ${flags.length} 項目</b>に印、装備のない <b>${naCount} 項目</b>を「／該当なし」にしています。その他は仮に「良好（レ）」です。基本情報を入力し、印の付いた項目の結果を選んだうえで、各項目を実際に点検して修正してください。この下書きは必ず点検実施者がご確認ください。`
+      : `かんたん診断と車両の確認から<b>下書き</b>しました。装備のない <b>${naCount} 項目</b>を「／該当なし」、その他は仮に「良好（レ）」にしています。基本情報を入力し、実際に点検して内容を確認・修正してから印刷してください。この下書きは必ず点検実施者がご確認ください。`;
   }
   window.scrollTo({ top: 0 });
+}
+
+/* ============================================================
+   車両の確認ステップ（いすゞ車のよくある構成）
+   回答から「該当なし（／）」にする別表第3の項目を決める
+   ============================================================ */
+const VEHICLE_CFG_KEY = 'truck-vehicle-config';
+const VEHICLE_QUESTIONS = [
+  { id:'size', label:'車格（車両総重量）', opts:[
+    { v:'large', t:'大型（8t以上・エアブレーキ）', d:true },
+    { v:'medium', t:'中型' },
+    { v:'small', t:'小型' },
+  ]},
+  { id:'mission', label:'トランスミッション', opts:[
+    { v:'amt', t:'スムーサー（AMT）', d:true },
+    { v:'mt', t:'MT（マニュアル）' },
+    { v:'at', t:'AT' },
+  ]},
+  { id:'brake', label:'ブレーキの組み合わせ', opts:[
+    { v:'drum', t:'前後ドラム', d:true },
+    { v:'fd', t:'前ディスク・後ドラム' },
+    { v:'disc', t:'前後ディスク' },
+  ]},
+  { id:'parking', label:'パーキングブレーキ', opts:[
+    { v:'wheel', t:'ホイールパーキング（スプリング）', d:true },
+    { v:'center', t:'センターブレーキ（プロペラシャフト）' },
+  ]},
+  { id:'rearsus', label:'リヤサスペンション', opts:[
+    { v:'leaf', t:'板ばね（リーフ）', d:true },
+    { v:'air', t:'エアサス' },
+  ]},
+  { id:'spare', label:'スペアタイヤ', opts:[
+    { v:'no', t:'積んでいない', d:true },
+    { v:'yes', t:'積んでいる' },
+  ]},
+];
+
+function naKeysFromConfig(cfg){
+  // 常に該当なし：ディーゼルの貨物トラック前提（点火装置・高圧ガス燃料・非常口の扉）
+  const na = new Set(['5_0','5_1','9_0','10_0']);
+  if(cfg.size !== 'large'){ ['1_6','8_0','10_2','10_3','10_4'].forEach(k=> na.add(k)); }
+  if(cfg.mission === 'amt' || cfg.mission === 'at'){ na.add('4_0'); na.add('4_2'); }
+  if(cfg.brake === 'drum'){ na.add('1_9'); na.add('1_10'); }
+  if(cfg.brake === 'disc'){ na.add('1_7'); na.add('1_8'); }
+  if(cfg.parking === 'wheel'){ na.add('1_11'); na.add('1_12'); }
+  if(cfg.rearsus === 'leaf'){ na.add('3_1'); na.add('3_2'); na.add('3_3'); }
+  if(cfg.size === 'large' && cfg.spare === 'no'){ na.add('10_2'); na.add('10_3'); }
+  return na;
+}
+
+function loadVehicleCfg(){
+  let c = null;
+  try{ c = JSON.parse(localStorage.getItem(VEHICLE_CFG_KEY) || 'null'); }catch(e){}
+  const cfg = {};
+  VEHICLE_QUESTIONS.forEach(q=>{
+    const saved = c && c[q.id];
+    cfg[q.id] = (saved && q.opts.some(o=> o.v === saved)) ? saved : (q.opts.find(o=> o.d) || q.opts[0]).v;
+  });
+  return cfg;
+}
+
+function buildVehicleCheck(){
+  const host = document.getElementById('vehicleCheck');
+  const cfg = loadVehicleCfg();
+  host.innerHTML =
+    `<div class="vcheck">
+      <h2>車両の確認</h2>
+      <p class="vc-sub">いすゞ車のよくある構成を選んでいます。ちがう項目だけ選び直してください。装備のない項目は記録簿で「／該当なし」になります（あとで表入力で直せます）。</p>
+      ${VEHICLE_QUESTIONS.map(q=>
+        `<div class="vc-q" data-q="${q.id}">
+          <div class="vc-label">${escHtml(q.label)}</div>
+          <div class="vc-opts">
+            ${q.opts.map(o=> `<button type="button" data-v="${o.v}" class="${cfg[q.id] === o.v ? 'sel' : ''}">${escHtml(o.t)}</button>`).join('')}
+          </div>
+        </div>`).join('')}
+      <div class="vc-actions">
+        <button type="button" class="btn-primary" id="vcConfirm">確認して記録簿を作る</button>
+        <button type="button" class="btn-ghost" id="vcBack">戻る</button>
+      </div>
+    </div>`;
+  host.querySelectorAll('.vc-opts').forEach(grp=>{
+    grp.addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+      grp.querySelectorAll('button').forEach(x=> x.classList.remove('sel'));
+      b.classList.add('sel');
+    });
+  });
+  document.getElementById('vcConfirm').addEventListener('click', confirmVehicleCheck);
+  document.getElementById('vcBack').addEventListener('click', closeVehicleCheck);
+}
+
+function openVehicleCheck(){
+  buildVehicleCheck();
+  document.getElementById('mode-simple').classList.add('vcheck-on');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function closeVehicleCheck(){
+  document.getElementById('mode-simple').classList.remove('vcheck-on');
+  window.scrollTo({ top: 0 });
+}
+function confirmVehicleCheck(){
+  const cfg = {};
+  document.querySelectorAll('#vehicleCheck .vc-q').forEach(q=>{
+    const sel = q.querySelector('button.sel');
+    cfg[q.dataset.q] = sel ? sel.dataset.v : null;
+  });
+  try{ localStorage.setItem(VEHICLE_CFG_KEY, JSON.stringify(cfg)); }catch(e){}
+  closeVehicleCheck();
+  reflectToRecord(cfg);
 }
 
 /* ============================================================
@@ -1054,9 +1242,11 @@ function reflectToRecord(){
    RESULT_OPTIONS / 凡例は、点検整備記録簿で一般的に使われる記号に準拠：
    レ=点検  ×=交換  A=調整  C=清掃  P=省略  ○=分解  △=修理  T=締付  L=給油  ／=該当なし
    ============================================================ */
-const RESULT_OPTIONS = ["", "レ", "×", "A", "C", "P", "○", "△", "T", "L", "／"];
+const RESULT_OPTIONS = ["", "レ", "×", "A", "C", "P", "△", "T", "L", "／"];
 const LEGEND_TEXT =
-  '<b>記号</b> レ＝点検（異常なし）／ ×＝交換／ A＝調整／ C＝清掃／ P＝省略／ ○＝分解／ △＝修理／ T＝締付／ L＝給油／ ／＝該当なし';
+  '<b>記号</b> レ＝良好／ ×＝交換／ A＝調整／ C＝清掃／ P＝省略／ △＝修理／ T＝締付／ L＝給油／ ／＝該当なし';
+const DISASM_NOTE =
+  '<b>分解</b>したときは結果の記号を○で囲みます（例「レ」を○で囲む＝分解して点検し良好、「×」を○で囲む＝分解して交換）。分解を伴う整備（特定整備）は認証・指定工場で行ってください。';
 const MARK_TEXT =
   '<b>※1</b>＝3か月の走行距離が2000km以下のときは省略できる（2回連続の省略は不可）／ <b>※2</b>＝車両総重量8t以上、または乗車定員30人以上の自動車が対象';
 
@@ -1133,9 +1323,6 @@ const RECORD_ITEMS = [
     { place: "スペアタイヤ", check: "取付状態", mark: "※2" },
     { place: "ツールボックス", check: "取付部の緩み及び損傷", mark: "※2" },
   ]},
-  { group: "その他", items: [
-    { place: "シャシ各部", check: "給油脂状態" },
-  ]},
 ];
 
 /* 日常点検：自動車点検基準の日常点検項目に準拠 */
@@ -1157,7 +1344,7 @@ function escHtml(s){
   return String(s).replace(/[&<>"]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
-function buildTable(tbodyId, groups, prefix){
+function buildTable(tbodyId, groups, prefix, withDisasm){
   const tbody = document.getElementById(tbodyId);
   const opts = RESULT_OPTIONS.map(o=> `<option value="${o}">${o || '—'}</option>`).join('');
   let html = '';
@@ -1166,10 +1353,13 @@ function buildTable(tbodyId, groups, prefix){
     grp.items.forEach((it, ii)=>{
       const base = `${prefix}_${gi}_${ii}`;
       const mk = it.mark ? ` <span class="mk">${it.mark}</span>` : '';
+      const dis = withDisasm
+        ? `<button type="button" class="disasm-btn" data-disasm-btn>分解</button><input type="hidden" name="${base}_disasm">`
+        : '';
       html += `<tr>
         <td class="col-place">${escHtml(it.place)}</td>
         <td class="col-check">${escHtml(it.check || '')}${mk}</td>
-        <td class="col-result"><select name="${base}_result" data-result-select>${opts}</select></td>
+        <td class="col-result">${dis}<select name="${base}_result" data-result-select>${opts}</select></td>
         <td class="col-note"><input type="text" name="${base}_note" autocomplete="off"></td>
       </tr>`;
     });
@@ -1187,11 +1377,11 @@ function styleResultSelect(sel){
    ガイド入力（質問形式）— 表と同じ隠しフィールドを読み書きする
    ============================================================ */
 const SYM_LABEL = {
-  'レ':'点検（異常なし）', '×':'交換', 'A':'調整', 'C':'清掃', 'P':'省略',
+  'レ':'良好', '×':'交換', 'A':'調整', 'C':'清掃', 'P':'省略',
   '○':'分解', '△':'修理', 'T':'締付', 'L':'給油', '／':'該当なし'
 };
 
-function buildGuide(containerId, groups, prefix){
+function buildGuide(containerId, groups, prefix, withDisasm){
   const c = document.getElementById(containerId);
   let html = `<div class="gprogress">0 / 0 項目 回答済み</div>`;
   groups.forEach((grp, gi)=>{
@@ -1199,10 +1389,13 @@ function buildGuide(containerId, groups, prefix){
     grp.items.forEach((it, ii)=>{
       const base = `${prefix}_${gi}_${ii}`;
       const mk = it.mark ? ` <span class="mk">${it.mark}</span>` : '';
+      const disRow = withDisasm
+        ? `<div class="gdisasm"><button type="button" data-disasm-btn>分解して点検・整備した</button></div>`
+        : '';
       html += `<div class="gcard" data-target="${base}">
         <div class="gq"><b>${escHtml(it.place)}</b>：<span class="gcheck">${escHtml(it.check || '')}</span>${mk}</div>
         <div class="gbtns">
-          <button type="button" data-sym="レ">異常なし</button>
+          <button type="button" data-sym="レ">良好</button>
           <button type="button" data-act>整備した…</button>
           <button type="button" data-sym="／">該当なし</button>
           <button type="button" class="gsmall" data-sym="P">省略</button>
@@ -1212,10 +1405,10 @@ function buildGuide(containerId, groups, prefix){
           <button type="button" data-sym="△">修理</button>
           <button type="button" data-sym="A">調整</button>
           <button type="button" data-sym="C">清掃</button>
-          <button type="button" data-sym="○">分解</button>
           <button type="button" data-sym="T">締付</button>
           <button type="button" data-sym="L">給油</button>
         </div>
+        ${disRow}
         <input type="text" class="gnote" placeholder="備考（任意）">
         <div class="gstate">未回答</div>
       </div>`;
@@ -1228,6 +1421,8 @@ function updateGuideCard(card, root){
   const base = card.dataset.target;
   const sel = root.querySelector(`[name="${base}_result"]`);
   const noteEl = root.querySelector(`[name="${base}_note"]`);
+  const disEl = root.querySelector(`[name="${base}_disasm"]`);
+  const dis = !!(disEl && disEl.value === '1');
   const val = sel ? sel.value : '';
   const gacts = card.querySelector('.gacts');
   card.querySelectorAll('.gbtns button, .gacts button').forEach(b=> b.classList.remove('sel','sel-act','sel-na'));
@@ -1246,10 +1441,21 @@ function updateGuideCard(card, root){
     const ab = gacts.querySelector(`[data-sym="${val}"]`);
     if(ab) ab.classList.add('sel');
   }
+  const dbtn = card.querySelector('[data-disasm-btn]');
+  if(dbtn) dbtn.classList.toggle('on', dis);
   const gstate = card.querySelector('.gstate');
-  gstate.innerHTML = val
-    ? `記入：<b>${escHtml(val)}</b>（${escHtml(SYM_LABEL[val] || '')}）`
-    : '未回答';
+  if(!val && !dis){
+    gstate.innerHTML = '未回答';
+  } else {
+    const inner = dis
+      ? `<span class="mark-dis">${escHtml(val || '')}</span>`
+      : `<b>${escHtml(val)}</b>`;
+    let lbl;
+    if(dis && val) lbl = '分解＋' + (SYM_LABEL[val] || '');
+    else if(dis) lbl = '分解（結果も選んでください）';
+    else lbl = SYM_LABEL[val] || '';
+    gstate.innerHTML = `記入：${inner}　${escHtml(lbl)}`;
+  }
   card.classList.toggle('done', !!val);
   const gn = card.querySelector('.gnote');
   if(noteEl && gn && gn.value !== noteEl.value) gn.value = noteEl.value;
@@ -1276,6 +1482,16 @@ function wireGuide(container, root){
     if(btn.hasAttribute('data-act')){
       const gacts = card.querySelector('.gacts');
       gacts.hidden = !gacts.hidden;
+      return;
+    }
+    if(btn.hasAttribute('data-disasm-btn')){
+      const dis = root.querySelector(`[name="${card.dataset.target}_disasm"]`);
+      if(dis){
+        dis.value = dis.value === '1' ? '' : '1';
+        dis.dispatchEvent(new Event('input', { bubbles:true }));
+      }
+      updateGuideCard(card, root);
+      updateGuideProgress(container);
       return;
     }
     const sym = btn.getAttribute('data-sym');
@@ -1316,6 +1532,13 @@ function loadStore(key, root){
   if(!data) return;
   fieldsIn(root).forEach(el=>{ if(data[el.name] !== undefined) el.value = data[el.name]; });
   root.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
+  refreshDisasmBtns(root);
+}
+function refreshDisasmBtns(root){
+  root.querySelectorAll('.disasm-btn').forEach(b=>{
+    const dis = b.parentElement.querySelector('input[name$="_disasm"]');
+    if(dis) b.classList.toggle('on', dis.value === '1');
+  });
 }
 
 /* --- 印刷シートの組み立て（エクセル風の3段組み） --- */
@@ -1344,10 +1567,12 @@ function buildPrintSheet(kind){
   items.forEach((grp, gi)=>{
     const rows = grp.items.map((it, ii)=>{
       const r = gv(`${prefix}_${gi}_${ii}_result`);
+      const dsm = isRec && gv(`${prefix}_${gi}_${ii}_disasm`) === '1';
       const n = gv(`${prefix}_${gi}_${ii}_note`);
       const mk = it.mark ? `<span class="mkp">${it.mark}</span>` : '';
       const nt = n ? `<span class="nt">（${escHtml(n)}）</span>` : '';
-      return `<div class="pr"><span class="pi">${escHtml(it.place)}：${escHtml(it.check || '')}${mk}${nt}</span><span class="ps">${escHtml(r)}</span></div>`;
+      const ps = dsm ? `<span class="ps-dis">${escHtml(r)}</span>` : escHtml(r);
+      return `<div class="pr"><span class="pi">${escHtml(it.place)}：${escHtml(it.check || '')}${mk}${nt}</span><span class="ps">${ps}</span></div>`;
     }).join('');
     colsHtml += `<div class="pgroup"><div class="pgh">■ ${escHtml(grp.group)}</div>${rows}</div>`;
   });
@@ -1355,7 +1580,7 @@ function buildPrintSheet(kind){
   const memo  = isRec ? gv('b_memo') : gv('d_memo');
   const title = isRec ? '３か月点検整備記録簿' : '日常点検記録簿';
   const note  = isRec ? '自動車点検基準 別表第3 に基づく（個人作成様式）' : '日常点検（運行前点検）記録（個人作成様式）';
-  const legend = LEGEND_TEXT + (isRec ? '<br>' + MARK_TEXT : '');
+  const legend = LEGEND_TEXT + (isRec ? '<br>' + DISASM_NOTE + '<br>' + MARK_TEXT : '');
   const memoLabel = isRec ? 'その他の整備、交換部品等' : '気づいた点';
 
   sheet.innerHTML =
@@ -1418,13 +1643,13 @@ document.getElementById('btnModeRecord').addEventListener('click', ()=> setMode(
 document.getElementById('btnModeDaily').addEventListener('click', ()=> setMode('daily'));
 
 /* --- 記録簿・日常点検の初期化と操作 --- */
-document.getElementById('recLegend').innerHTML = LEGEND_TEXT + '<br>' + MARK_TEXT;
+document.getElementById('recLegend').innerHTML = LEGEND_TEXT + '<br>' + DISASM_NOTE + '<br>' + MARK_TEXT;
 document.getElementById('dailyLegend').innerHTML = LEGEND_TEXT;
 
-buildTable('recBody', RECORD_ITEMS, 'r');
-buildTable('dailyBody', DAILY_ITEMS, 'd');
-buildGuide('recGuide', RECORD_ITEMS, 'r');
-buildGuide('dailyGuide', DAILY_ITEMS, 'd');
+buildTable('recBody', RECORD_ITEMS, 'r', true);
+buildTable('dailyBody', DAILY_ITEMS, 'd', false);
+buildGuide('recGuide', RECORD_ITEMS, 'r', true);
+buildGuide('dailyGuide', DAILY_ITEMS, 'd', false);
 
 const recRoot = document.getElementById('mode-record');
 const dailyRoot = document.getElementById('mode-daily');
@@ -1432,6 +1657,32 @@ const recGuideEl = document.getElementById('recGuide');
 const dailyGuideEl = document.getElementById('dailyGuide');
 loadStore(STORE.record, recRoot);
 loadStore(STORE.daily, dailyRoot);
+
+/* 旧データ移行：単独「○」→ 分解フラグ＋結果クリア */
+try{
+  const raw = JSON.parse(localStorage.getItem(STORE.record) || 'null');
+  if(raw){
+    let migrated = false;
+    Object.keys(raw).forEach(k=>{
+      if(k.endsWith('_result') && raw[k] === '○'){
+        const disEl = recRoot.querySelector(`[name="${k.replace(/_result$/, '_disasm')}"]`);
+        if(disEl){ disEl.value = '1'; migrated = true; }
+      }
+    });
+    if(migrated){ refreshDisasmBtns(recRoot); saveStore(STORE.record, recRoot); }
+  }
+}catch(e){}
+
+/* 表入力の「分解」ボタン */
+document.getElementById('recTableWrap').addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-disasm-btn]');
+  if(!b) return;
+  const dis = b.parentElement.querySelector('input[name$="_disasm"]');
+  if(!dis) return;
+  dis.value = dis.value === '1' ? '' : '1';
+  b.classList.toggle('on', dis.value === '1');
+  dis.dispatchEvent(new Event('input', { bubbles:true }));
+});
 
 function wireRecordish(root, storeKey, savedNoteId, printKind, guideEl){
   function onEdit(e){
@@ -1456,7 +1707,7 @@ syncGuide(dailyGuideEl, dailyRoot);
 let recFlags = [];
 try{ recFlags = JSON.parse(localStorage.getItem('truck-record-flags') || '[]'); }catch(e){}
 applyRecordFlags(recFlags);
-document.getElementById('btnToRecord').addEventListener('click', reflectToRecord);
+document.getElementById('btnToRecord').addEventListener('click', openVehicleCheck);
 
 function wireSubSwitch(guideBtnId, tableBtnId, guideId, tableWrapId, viewKey, root){
   const gb = document.getElementById(guideBtnId), tb = document.getElementById(tableBtnId);
@@ -1468,6 +1719,7 @@ function wireSubSwitch(guideBtnId, tableBtnId, guideId, tableWrapId, viewKey, ro
     tb.classList.toggle('active', !isGuide);
     try{ localStorage.setItem(viewKey, isGuide ? 'guide' : 'table'); }catch(e){}
     if(isGuide) syncGuide(g, root);
+    else refreshDisasmBtns(root);
   }
   gb.addEventListener('click', ()=> set('guide'));
   tb.addEventListener('click', ()=> set('table'));
@@ -1572,6 +1824,7 @@ function clearGroup(root, storeKey, savedNoteId, guideEl){
   if(!confirm('入力した内容をすべて消します。よろしいですか？')) return;
   fieldsIn(root).forEach(el=>{ el.value = ''; });
   root.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
+  refreshDisasmBtns(root);
   try{ localStorage.removeItem(storeKey); }catch(e){}
   if(root.id === 'mode-record'){
     try{ localStorage.removeItem('truck-record-flags'); }catch(e){}
