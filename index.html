@@ -606,7 +606,7 @@
         </div>
         <div class="result-line" data-result="clutch_shift"></div>
 
-        <p class="q" style="margin-top:16px;">ペダルを奥まで踏み込まないと繋がらない（床に近いところでしか繋がらない）感覚はありますか？</p>
+        <p class="q" style="margin-top:16px;">クラッチが繋がる位置が、以前よりペダルの上のほう（床から離れた位置）に上がってきていませんか？<span class="hint">通常はペダルストロークの中間あたりで繋がります。クラッチが摩耗すると繋がる位置が上がってきます。</span></p>
         <div class="choices" data-q="clutch_deep">
           <button class="choice-btn" data-val="no">ない</button>
           <button class="choice-btn" data-val="yes">ある</button>
@@ -899,7 +899,7 @@ function handleAnswer(qkey, val){
       break;
     case 'clutch_deep':
       val === 'yes'
-        ? setResult(qkey, 'warn', '要点検：クラッチの摩耗・調整不良の疑いがあります。')
+        ? setResult(qkey, 'warn', '要点検：クラッチの摩耗の疑いがあります。')
         : setResult(qkey, 'ok', '異常なし。');
       checkClutchDone();
       break;
@@ -1008,7 +1008,7 @@ const SIMPLE_TO_RECORD = {
   oil_coolant:    { rows: [[6,3]],       warn: 'かんたん診断：オイル／クーラントの量が減少。漏れ・異常消費を点検。' },
   brake_level:    { rows: [[1,5]],       warn: 'かんたん診断：ブレーキ液の量が減少。漏れを点検。' },
   clutch_shift:   { rows: [[4,2],[4,1]], warn: 'かんたん診断：踏むたび断続位置が変化。マスタ／ブースタの油圧漏れを点検。' },
-  clutch_deep:    { rows: [[4,1],[4,0]], warn: 'かんたん診断：断続位置が床寄り。クラッチの摩耗・調整を点検。' },
+  clutch_deep:    { rows: [[4,1],[4,0]], warn: 'かんたん診断：断続位置が上昇。クラッチの摩耗を点検。' },
   idle_vibration: { rows: [[6,0]],       warn: 'かんたん診断：アイドリング振動が大きい。エンジンマウント・点火系を点検。' },
   tire_edge:      { rows: [[2,0]],       warn: 'かんたん診断：フロントタイヤに偏摩耗。空気圧・アライメントを点検。' },
   tire_wave:      { rows: [[2,0]],       warn: 'かんたん診断：タイヤ表面に波状摩耗。ローテーションを検討。' },
