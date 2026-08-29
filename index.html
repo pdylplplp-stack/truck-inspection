@@ -383,6 +383,27 @@
   }
   #recBody tr.flag td.col-place{ box-shadow: inset 3px 0 0 var(--amber); }
 
+  /* ===== 車両プロフィール ===== */
+  .vehicle-profile{
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  }
+  .vehicle-profile label{ font-size: 11.5px; color: var(--text-dim); }
+  .vehicle-profile select{
+    font-family:'IBM Plex Sans JP', sans-serif; font-size: 15px; color: var(--text);
+    background: var(--bg-panel-raised); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 7px 8px; flex: 1; min-width: 140px;
+  }
+  .vp-btn{
+    font-family:'IBM Plex Sans JP', sans-serif; font-size: 12.5px; font-weight: 600;
+    padding: 8px 12px; border-radius: var(--radius);
+    border: 1px solid var(--steel); background: var(--bg-panel-raised); color: var(--text);
+    cursor: pointer;
+  }
+  .vp-del{ border-color: var(--warn); color: #e5a49c; }
+  .vp-note{ flex-basis: 100%; margin: 2px 0 0; font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+
   /* ===== 印刷シート =====
      画面では非表示。印刷時と採寸時のみ表示。
      文字サイズはすべて em で、.print-sheet の font-size(=--ps-scale倍) に追従する。
@@ -632,6 +653,13 @@
         </div>
 
         <div class="rec-section-title">1. 基本情報</div>
+        <div class="vehicle-profile no-print">
+          <label for="vpSelect">保存した車両</label>
+          <select id="vpSelect"><option value="">（新規入力）</option></select>
+          <button type="button" id="vpSave" class="vp-btn">この車両を保存</button>
+          <button type="button" id="vpDelete" class="vp-btn vp-del" hidden>削除</button>
+          <p class="vp-note">使用者の氏名・住所・車両番号・車台番号・点検整備実施者をこの端末に保存し、次回から選ぶだけで入力できます。走行距離・点検年月日・整備完了日は毎回入力してください。</p>
+        </div>
         <div class="rec-basic">
           <div class="rec-field wide"><label>使用者の氏名または名称</label><input type="text" name="b_owner" autocomplete="off"></div>
           <div class="rec-field wide"><label>住所</label><input type="text" name="b_addr" autocomplete="off"></div>
@@ -686,6 +714,13 @@
         </div>
 
         <div class="rec-section-title">1. 基本情報</div>
+        <div class="vehicle-profile no-print">
+          <label for="dpSelect">保存した車両</label>
+          <select id="dpSelect"><option value="">（新規入力）</option></select>
+          <button type="button" id="dpSave" class="vp-btn">この車両を保存</button>
+          <button type="button" id="dpDelete" class="vp-btn vp-del" hidden>削除</button>
+          <p class="vp-note">車両番号・点検者をこの端末に保存し、次回から選ぶだけで入力できます。点検年月日・走行距離は毎回入力してください。3ヶ月記録簿で保存した車両とも共通です。</p>
+        </div>
         <div class="rec-basic">
           <div class="rec-field"><label>車両番号</label><input type="text" name="d_plate" autocomplete="off"></div>
           <div class="rec-field"><label>点検年月日</label><input type="date" name="d_date"></div>
@@ -1442,6 +1477,96 @@ function wireSubSwitch(guideBtnId, tableBtnId, guideId, tableWrapId, viewKey, ro
 }
 wireSubSwitch('btnRecGuide', 'btnRecTable', 'recGuide', 'recTableWrap', 'truck-record-view', recRoot);
 wireSubSwitch('btnDailyGuide', 'btnDailyTable', 'dailyGuide', 'dailyTableWrap', 'truck-daily-view', dailyRoot);
+
+/* --- 車両プロフィール（この端末に保存。3ヶ月記録簿と日常点検簿で共通） ---
+   保存する項目：owner=使用者氏名 / addr=住所 / plate=車両番号 / vin=車台番号 / inspector=実施者
+   毎回入力：走行距離・点検年月日・整備完了日 */
+const VP_KEY = 'truck-vehicle-profiles';
+const VP_WIDGETS = [];
+
+function setupVehicleProfile(cfg){
+  const root = cfg.root, map = cfg.map;
+  const formNames = Object.keys(map);
+  const sel = document.getElementById(cfg.selectId);
+  const saveBtn = document.getElementById(cfg.saveId);
+  const delBtn = document.getElementById(cfg.delId);
+  if(!sel || !saveBtn || !delBtn) return null;
+
+  const load = ()=>{ try{ return JSON.parse(localStorage.getItem(VP_KEY) || '[]'); }catch(e){ return []; } };
+  const store = (l)=>{ try{ localStorage.setItem(VP_KEY, JSON.stringify(l)); }catch(e){} };
+
+  function refresh(pick){
+    const list = load();
+    const keep = (pick === undefined) ? sel.value : (pick === '' ? '' : String(pick));
+    sel.innerHTML = '<option value="">（新規入力）</option>' +
+      list.map((p,i)=> `<option value="${i}">${escHtml(p.name || ('車両' + (i+1)))}</option>`).join('');
+    if(keep !== '' && list[keep]) sel.value = keep;
+    delBtn.hidden = !sel.value;
+  }
+  function apply(idx){
+    const p = load()[idx];
+    if(!p) return;
+    formNames.forEach(fn=>{
+      const el = root.querySelector(`[name="${fn}"]`);
+      if(el){ el.value = p[map[fn]] || ''; el.dispatchEvent(new Event('input', { bubbles:true })); }
+    });
+  }
+  function current(){
+    const o = {};
+    formNames.forEach(fn=>{
+      const el = root.querySelector(`[name="${fn}"]`);
+      o[map[fn]] = el ? el.value.trim() : '';
+    });
+    return o;
+  }
+
+  sel.addEventListener('change', ()=>{
+    delBtn.hidden = !sel.value;
+    if(sel.value !== '') apply(Number(sel.value));
+  });
+  saveBtn.addEventListener('click', ()=>{
+    const cur = current();
+    if(!Object.keys(cur).some(k=> cur[k])){
+      alert('保存する内容がありません。先に基本情報を入力してください。');
+      return;
+    }
+    const list = load();
+    const editing = sel.value !== '' ? Number(sel.value) : -1;
+    const defName = cur.plate || cur.owner || ('車両' + (list.length + 1));
+    const name = (prompt('この車両の名前（例：品川300あ1234）', editing >= 0 ? (list[editing].name || defName) : defName) || '').trim();
+    if(!name) return;
+    if(editing >= 0) list[editing] = Object.assign({}, list[editing], cur, { name });
+    else list.push(Object.assign({ name }, cur));
+    store(list);
+    VP_WIDGETS.forEach(w=> w.refresh(w === api ? (editing >= 0 ? editing : list.length - 1) : undefined));
+    const n = document.getElementById(cfg.savedNoteId);
+    if(n) n.textContent = '車両「' + name + '」を保存しました（この端末内）';
+  });
+  delBtn.addEventListener('click', ()=>{
+    if(sel.value === '') return;
+    const list = load();
+    const idx = Number(sel.value);
+    if(!list[idx]) return;
+    if(!confirm('車両「' + (list[idx].name || '') + '」の保存を削除します。よろしいですか？（入力中の内容は消えません）')) return;
+    list.splice(idx, 1);
+    store(list);
+    VP_WIDGETS.forEach(w=> w.refresh(w === api ? '' : undefined));
+  });
+
+  const api = { refresh };
+  VP_WIDGETS.push(api);
+  refresh();
+  return api;
+}
+
+setupVehicleProfile({
+  root: recRoot, selectId: 'vpSelect', saveId: 'vpSave', delId: 'vpDelete', savedNoteId: 'savedNoteRecord',
+  map: { b_owner:'owner', b_addr:'addr', b_plate:'plate', b_vin:'vin', b_inspector:'inspector' }
+});
+setupVehicleProfile({
+  root: dailyRoot, selectId: 'dpSelect', saveId: 'dpSave', delId: 'dpDelete', savedNoteId: 'savedNoteDaily',
+  map: { d_plate:'plate', d_inspector:'inspector' }
+});
 
 function clearGroup(root, storeKey, savedNoteId, guideEl){
   if(!confirm('入力した内容をすべて消します。よろしいですか？')) return;
