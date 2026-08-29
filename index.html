@@ -351,6 +351,38 @@
     font-family:'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-dim);
   }
 
+  /* ===== かんたん診断 → 3ヶ月記録簿 ===== */
+  .to-record{
+    margin: 16px auto 0; width: 100%;
+    font-family:'IBM Plex Sans JP', sans-serif;
+    font-size: 14px; font-weight: 600;
+    padding: 13px 20px; border-radius: var(--radius);
+    border: 1px solid var(--amber); background: var(--amber); color: var(--bg);
+    cursor: pointer; display: none;
+  }
+  .to-record.show{ display: block; }
+  .to-record-hint{
+    font-size: 11.5px; color: var(--text-dim); margin-top: 8px;
+    line-height: 1.6; display: none;
+  }
+  .to-record-hint.show{ display: block; }
+
+  .rec-reflect{
+    background: rgba(242,169,0,0.12);
+    border: 1px solid var(--amber-dim); border-radius: var(--radius);
+    padding: 12px 14px; margin: 14px 0 4px;
+    font-size: 12.5px; color: var(--text); line-height: 1.7; display: none;
+  }
+  .rec-reflect.show{ display: block; }
+  .rec-reflect b{ color: var(--amber); }
+  #recGuide .gcard.flag{ border-color: var(--amber); }
+  #recGuide .gcard.flag .gq::after{
+    content: '要確認'; display: inline-block; margin-left: 8px;
+    padding: 1px 6px; font-size: 10px; font-family:'IBM Plex Mono', monospace;
+    color: var(--bg); background: var(--amber); border-radius: 2px;
+  }
+  #recBody tr.flag td.col-place{ box-shadow: inset 3px 0 0 var(--amber); }
+
   /* ===== 印刷シート =====
      画面では非表示。印刷時と採寸時のみ表示。
      文字サイズはすべて em で、.print-sheet の font-size(=--ps-scale倍) に追従する。
@@ -579,6 +611,8 @@
       <p class="summary-label">診断結果</p>
       <div class="stamp pending" id="stampEl">未完了</div>
       <p class="summary-note" id="summaryNote">すべての項目に回答すると、結果が表示されます。</p>
+      <button class="to-record no-print" id="btnToRecord" type="button">この内容で3ヶ月点検整備記録簿を作る</button>
+      <p class="to-record-hint no-print" id="toRecordHint">回答した項目を記録簿に下書きします。基本情報の入力と、印の付いた項目の確認は、記録簿の画面で行ってください。</p>
       <div><button class="reset-btn" id="resetBtn" type="button">最初からやり直す</button></div>
     </div>
 
@@ -610,6 +644,7 @@
         </div>
 
         <div class="rec-legend" id="recLegend"></div>
+        <div class="rec-reflect no-print" id="recReflect"></div>
 
         <div class="rec-section-title">2. 点検項目</div>
         <div class="subswitch">
@@ -832,6 +867,11 @@ function updateSummary(){
   const answeredCards = document.querySelectorAll('.card.answered').length;
   const stamp = document.getElementById('stampEl');
   const note = document.getElementById('summaryNote');
+  const complete = answeredCards >= totalPrimary;
+  const toRec = document.getElementById('btnToRecord');
+  const toRecHint = document.getElementById('toRecordHint');
+  if(toRec) toRec.classList.toggle('show', complete);
+  if(toRecHint) toRecHint.classList.toggle('show', complete);
   if(answeredCards < totalPrimary){
     stamp.className = 'stamp pending';
     stamp.textContent = '未完了';
@@ -861,6 +901,118 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   updateSummary();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+/* ============================================================
+   かんたん診断 → 3ヶ月点検整備記録簿 への下書き反映
+   ・答えを 別表第3（RECORD_ITEMS）の [グループ番号, 項目番号] に対応させる
+   ・「異常なし」→ その行に レ／「要点検」→ 結果は空欄のまま備考に理由＋要確認マーク
+   ============================================================ */
+const SIMPLE_TO_RECORD = {
+  oil_coolant:    { rows: [[6,3]],       warn: 'かんたん診断：オイル／クーラントの量が減少。漏れ・異常消費を点検。' },
+  brake_level:    { rows: [[1,5]],       warn: 'かんたん診断：ブレーキ液の量が減少。漏れを点検。' },
+  clutch_shift:   { rows: [[4,2],[4,1]], warn: 'かんたん診断：踏むたび断続位置が変化。マスタ／ブースタの油圧漏れを点検。' },
+  clutch_deep:    { rows: [[4,1],[4,0]], warn: 'かんたん診断：断続位置が床寄り。クラッチの摩耗・調整を点検。' },
+  idle_vibration: { rows: [[6,0]],       warn: 'かんたん診断：アイドリング振動が大きい。エンジンマウント・点火系を点検。' },
+  tire_edge:      { rows: [[2,0]],       warn: 'かんたん診断：フロントタイヤに偏摩耗。空気圧・アライメントを点検。' },
+  tire_wave:      { rows: [[2,0]],       warn: 'かんたん診断：タイヤ表面に波状摩耗。ローテーションを検討。' },
+};
+const LEAK_TO_RECORD = {
+  front:  { rows: [[6,3],[6,4]], warn: 'かんたん診断：前寄りに漏れ跡。エンジンオイル・冷却水・燃料系統を点検。' },
+  middle: { rows: [[4,3],[4,4]], warn: 'かんたん診断：中央部に漏れ跡。ミッション・プロペラシャフト・燃料系統を点検。' },
+  rear:   { rows: [[4,5]],       warn: 'かんたん診断：後ろ寄りに漏れ跡。デフオイル漏れを点検。' },
+};
+
+function simpleStatus(key){
+  const el = document.querySelector(`[data-result="${key}"]`);
+  if(!el || !el.classList.contains('show')) return null;
+  if(el.classList.contains('warn')) return 'warn';
+  if(el.classList.contains('ok')) return 'ok';
+  return 'info';
+}
+
+function applyRecordFlags(flags){
+  const set = new Set(flags || []);
+  document.querySelectorAll('#recGuide .gcard').forEach(card=>{
+    const on = set.has(card.dataset.target);
+    card.classList.toggle('flag', on);
+    if(on){ const g = card.querySelector('.gacts'); if(g) g.hidden = false; }
+  });
+  document.querySelectorAll('#recBody tr').forEach(tr=> tr.classList.remove('flag'));
+  set.forEach(base=>{
+    const sel = document.querySelector(`#recBody [name="${base}_result"]`);
+    if(sel){ const tr = sel.closest('tr'); if(tr) tr.classList.add('flag'); }
+  });
+}
+
+function reflectToRecord(){
+  const recRootEl = document.getElementById('mode-record');
+  const setField = (name, val)=>{
+    const f = recRootEl.querySelector(`[name="${name}"]`);
+    if(!f) return;
+    f.value = val;
+    f.dispatchEvent(new Event('input', { bubbles:true }));
+  };
+  const okRows = new Set();     // "gi_ii"
+  const warnNotes = {};         // "gi_ii" -> [理由, ...]
+  const addWarn = (rows, reason)=> rows.forEach(([gi,ii])=>{
+    const k = `${gi}_${ii}`;
+    (warnNotes[k] = warnNotes[k] || []).push(reason);
+  });
+  const addOk = (rows)=> rows.forEach(([gi,ii])=> okRows.add(`${gi}_${ii}`));
+
+  Object.keys(SIMPLE_TO_RECORD).forEach(key=>{
+    const st = simpleStatus(key);
+    if(!st) return;
+    const m = SIMPLE_TO_RECORD[key];
+    if(st === 'warn') addWarn(m.rows, m.warn);
+    else addOk(m.rows);            // ok も info（経過観察でOK）も レ
+  });
+
+  // オイル漏れ（下回り目視）は染みの位置で対応行が変わる
+  if(simpleStatus('leak_ground') === 'warn'){
+    const loc = answers['leak_location'];
+    if(loc && LEAK_TO_RECORD[loc]){
+      addWarn(LEAK_TO_RECORD[loc].rows, LEAK_TO_RECORD[loc].warn);
+    } else {
+      const memoEl = recRootEl.querySelector('[name="b_memo"]');
+      const add = 'かんたん診断：駐車位置に油染み。位置が特定できないため要点検。';
+      if(memoEl && memoEl.value.indexOf(add) === -1){
+        setField('b_memo', (memoEl.value ? memoEl.value + '\n' : '') + add);
+      }
+    }
+  }
+
+  const flags = [];
+  Object.keys(warnNotes).forEach(k=>{
+    const base = 'r_' + k;
+    const note = warnNotes[k].join(' / ');
+    const cur = recRootEl.querySelector(`[name="${base}_note"]`);
+    if(cur && cur.value.indexOf(note) === -1){
+      setField(`${base}_note`, cur.value ? cur.value + ' / ' + note : note);
+    }
+    flags.push(base);
+  });
+  okRows.forEach(k=>{
+    if(warnNotes[k]) return;       // 要点検が優先
+    setField(`r_${k}_result`, 'レ');
+  });
+
+  try{ localStorage.setItem('truck-record-flags', JSON.stringify(flags)); }catch(e){}
+
+  buildPrintSheet('record');
+  setMode('record');
+  syncGuide(document.getElementById('recGuide'), recRootEl);
+  applyRecordFlags(flags);
+
+  const banner = document.getElementById('recReflect');
+  if(banner){
+    banner.className = 'rec-reflect no-print show';
+    banner.innerHTML = flags.length
+      ? `かんたん診断の結果を<b>下書き</b>しました。<b>要確認 ${flags.length} 項目</b>に印を付けています。基本情報を入力し、印の付いた項目の点検結果（レ／交換／調整 など）を選んでください。この下書きは必ず点検実施者がご確認ください。`
+      : `かんたん診断の結果を<b>下書き</b>しました（気になる項目はありませんでした）。基本情報を入力し、残りの項目を確認してから印刷してください。`;
+  }
+  window.scrollTo({ top: 0 });
+}
 
 /* ============================================================
    記録簿・日常点検の共通データ
@@ -1266,6 +1418,11 @@ wireGuide(dailyGuideEl, dailyRoot);
 syncGuide(recGuideEl, recRoot);
 syncGuide(dailyGuideEl, dailyRoot);
 
+let recFlags = [];
+try{ recFlags = JSON.parse(localStorage.getItem('truck-record-flags') || '[]'); }catch(e){}
+applyRecordFlags(recFlags);
+document.getElementById('btnToRecord').addEventListener('click', reflectToRecord);
+
 function wireSubSwitch(guideBtnId, tableBtnId, guideId, tableWrapId, viewKey, root){
   const gb = document.getElementById(guideBtnId), tb = document.getElementById(tableBtnId);
   const g = document.getElementById(guideId), t = document.getElementById(tableWrapId);
@@ -1291,6 +1448,12 @@ function clearGroup(root, storeKey, savedNoteId, guideEl){
   fieldsIn(root).forEach(el=>{ el.value = ''; });
   root.querySelectorAll('[data-result-select]').forEach(styleResultSelect);
   try{ localStorage.removeItem(storeKey); }catch(e){}
+  if(root.id === 'mode-record'){
+    try{ localStorage.removeItem('truck-record-flags'); }catch(e){}
+    applyRecordFlags([]);
+    const banner = document.getElementById('recReflect');
+    if(banner){ banner.className = 'rec-reflect no-print'; banner.innerHTML = ''; }
+  }
   if(guideEl) syncGuide(guideEl, root);
   buildPrintSheet(root.id === 'mode-record' ? 'record' : 'daily');
   const n = document.getElementById(savedNoteId);
